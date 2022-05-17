@@ -1,7 +1,6 @@
 package xin.cosmos.basic.util;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
@@ -14,9 +13,37 @@ import java.util.List;
 
 /**
  * EasyExcel文件处理工具
+ * <p>
+ * {@linkplain EasyExcelFileUtils#downloadExcel(String, HttpServletResponse, List, Class)}
+ * 方法需配合前端javascript脚本下载使用，前端Excel文件下载：
+ * <pre>
+ *     function downloadFile(fileBytes, fileName) {
+ *       if (!fileBytes && !fileName) {
+ *            console.error('params{fileBytes, fileName} must be not null.')
+ *            return
+ *       }
+ *       const blob = new Blob([fileBytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+ *       if (window.navigator.msSaveOrOpenBlob) { // 兼容IE10
+ *             navigator.msSaveBlob(blob, fileName)
+ *       } else {
+ *            const a = document.createElement('a');
+ *            const url = window.URL.createObjectURL(blob);
+ *            a.href = url;
+ *            a.download = fileName;
+ *            a.click();
+ *            window.URL.revokeObjectURL(url);
+ *       }
+ *    }
+ * </pre>
+ *
+ * @author geng
  */
 @Slf4j
 public class EasyExcelFileUtils {
+
+    private EasyExcelFileUtils() {
+        throw new IllegalAccessError("not support create instance, please invoke static method in this class.");
+    }
 
     /**
      * Excel数据浏览器下载
@@ -52,7 +79,7 @@ public class EasyExcelFileUtils {
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             String urlFileName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
             response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + urlFileName + ".xlsx");
-            response.addHeader("excel-file-name", urlFileName + ".xlsx");
+            response.setHeader("excel-file-name", urlFileName + ".xlsx");
             EasyExcel.write(response.getOutputStream(), excelDataType)
                     .excelType(ExcelTypeEnum.XLSX)
                     .autoCloseStream(true)
