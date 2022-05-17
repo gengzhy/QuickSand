@@ -1,0 +1,9 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /qs
+spring:
+  mvc:
+    pathmatch:
+      #解决swagger3启动包找不到请求路径NPE问题
+      matching-strategy: ant_path_matcher
