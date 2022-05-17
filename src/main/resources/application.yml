@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /qs
 spring:
+  profiles:
+    include: redis
   mvc:
     pathmatch:
       #解决swagger3启动包找不到请求路径NPE问题
