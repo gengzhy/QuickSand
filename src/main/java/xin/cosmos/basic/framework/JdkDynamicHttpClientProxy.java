@@ -1,9 +1,13 @@
 package xin.cosmos.basic.framework;
 
-import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
+import xin.cosmos.basic.define.ResultVO;
+import xin.cosmos.basic.httpclient.HttpClient;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
 /**
@@ -11,11 +15,12 @@ import java.util.Arrays;
  *
  * @param <T>
  */
+@Slf4j
 public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
-    private Class<T> interfaceType;
+    private Class<T> serviceInterfaceClass;
 
-    public JdkDynamicHttpClientProxy(Class<T> interfaceType) {
-        this.interfaceType = interfaceType;
+    public JdkDynamicHttpClientProxy(Class<T> serviceInterfaceClass) {
+        this.serviceInterfaceClass = serviceInterfaceClass;
     }
 
     /**
@@ -32,13 +37,15 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
         if (Object.class.equals(method.getDeclaringClass())) {
             return method.invoke(this, args);
         }
+        final Class<T> serviceApiInterface = this.serviceInterfaceClass;
+        Annotation[] annotations = serviceApiInterface.getDeclaredAnnotations();
+        Method declaredMethod = serviceApiInterface.getDeclaredMethod(method.getName(), method.getParameterTypes());
+        Parameter[] parameters = declaredMethod.getParameters();
 
-        System.out.println("调用前，参数：{}" + Arrays.toString(args));
+        log.info("请求服务接口类-[{}],请求服务接口方法-[{}],请求参数值-[{}]", serviceApiInterface.getName(), method.getName(), Arrays.toString(args));
         // TODO 真正执行代理功能的地方
-        //这里可以得到参数数组和方法等，可以通过反射，注解等，进行结果集的处理
-        //mybatis就是在这里获取参数和相关注解，然后根据返回值类型，进行结果集的转换
-        Object result = JSON.toJSONString(args);
-        System.out.println("调用后，结果：{}" + result);
-        return null;
+        String result = HttpClient.create().get("http://liusha.xyz", null, null);
+        log.info("执行接口响应结果：{}", result);
+        return ResultVO.success(result);
     }
 }
