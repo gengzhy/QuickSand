@@ -33,7 +33,7 @@ public class ResultVO<T> {
     }
 
     public static <T> ResultVO<T> success(T data) {
-        return success(ResultCode.SUCCESS.getDesc(), data);
+        return success(ResultCode.SUCCESS.getMessage(), data);
     }
 
     public static <T> ResultVO<T> success(String message, T data) {
@@ -41,7 +41,7 @@ public class ResultVO<T> {
     }
 
     public static <T> ResultVO<T> failed() {
-        return new ResultVO<>(ResultCode.FAILED.name().toLowerCase(), ResultCode.FAILED.getDesc());
+        return new ResultVO<>(ResultCode.FAILED.name().toLowerCase(), ResultCode.FAILED.getMessage());
     }
 
     public static <T> ResultVO<T> failed(String message) {
@@ -49,7 +49,7 @@ public class ResultVO<T> {
     }
 
     public static <T> ResultVO<T> failed(ResultCode failedCode) {
-        return new ResultVO<>(failedCode.name().toLowerCase(), failedCode.getDesc());
+        return new ResultVO<>(failedCode.name().toLowerCase(), failedCode.getMessage());
     }
 
     public static <T> ResultVO<T> failed(ResultCode failedCode, String message) {
