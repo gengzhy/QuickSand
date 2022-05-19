@@ -22,6 +22,7 @@ import java.util.Map;
  */
 @Slf4j
 public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
+
     private Class<T> serviceInterfaceClass;
 
     public JdkDynamicHttpClientProxy(Class<T> serviceInterfaceClass) {
@@ -45,26 +46,29 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
         final Class<T> serviceApiInterface = this.serviceInterfaceClass;
         ApiService apiService = serviceApiInterface.getAnnotation(ApiService.class);
         if (apiService == null) {
-            throw new PlatformException("{%s}接口上缺少必须的注解{@%s}", serviceInterfaceClass.getSimpleName(), ApiService.class.getSimpleName());
+            throw new PlatformException("接口{%s}缺少注解{@%s}",
+                    serviceInterfaceClass.getSimpleName(), ApiService.class.getSimpleName());
         }
         ApiServiceOperation apiServiceOperation = method.getAnnotation(ApiServiceOperation.class);
         if (apiServiceOperation == null) {
-            throw new PlatformException("{接口方法{%s}上缺少必须的注解{%s}", method.getName(), ApiServiceOperation.class.getSimpleName());
+            throw new PlatformException("{接口方法{%s#%s}缺少注解{@%s}",
+                    serviceInterfaceClass.getSimpleName(), method.getName(), ApiServiceOperation.class.getSimpleName());
         }
 
         // 根节点接口与子节点接口是否对应判断
         if (!apiService.value().equals(apiServiceOperation.value().getRootUrl())) {
-            throw new PlatformException("{%s}接口类注解的参数{%s}与接口方法{%s}的注解参数{%s}不一致",
+            throw new PlatformException("接口{%s}注解参数{ApiRootUrl#%s}与接口方法{%s#%s}注解参数{ApiRootUrl#%s}类型不一致",
                     serviceInterfaceClass.getSimpleName(), apiService.value().name(),
+                    serviceInterfaceClass.getSimpleName(),
                     method.getName(), apiServiceOperation.value().getRootUrl().name());
         }
         // 请求地址
-        String fullUrl = apiService.value().getRootUrl() + apiServiceOperation.value().getApi();
+        String fullUrl = handleUrl(apiService, apiServiceOperation);
 
         log.info("请求服务接口-[{}],请求参数值-[{}] - 请求接口地址[{}]", method.getName(), Arrays.toString(args), fullUrl);
 
         // 格式化请求参数
-        Map<String, Object> params = ObjectToJsonMap(args);
+        Map<String, Object> params = objectToJsonMap(args);
         String result;
         if (RequestMethod.GET.equals(apiServiceOperation.method())) {
             result = HttpClient.create().get(fullUrl, null, params);
@@ -78,18 +82,48 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
     }
 
     /**
+     * 处理接口URL
+     *
+     * @param apiService
+     * @param apiServiceOperation
+     * @return
+     */
+    private String handleUrl(ApiService apiService, ApiServiceOperation apiServiceOperation) {
+        String rootUrl = apiService.value().getRootUrl();
+        String api = apiServiceOperation.value().getApi();
+
+        boolean rootSlash = rootUrl.endsWith("/");
+        boolean apiSlash = api.startsWith("/");
+        String url;
+        if (rootSlash) {
+            if (apiSlash) {
+                url = rootSlash + api.substring(1);
+            } else {
+                url = rootSlash + api;
+            }
+        } else {
+            if (apiSlash) {
+                url = rootSlash + api;
+            } else {
+                url = rootSlash + "/" + api;
+            }
+        }
+        return url;
+    }
+
+    /**
      * 将JavaBean请求参数，使用fastjson转换为map
      *
      * @param params 请求参数
      * @return
      */
-    private Map<String, Object> ObjectToJsonMap(Object[] params) {
+    private Map<String, Object> objectToJsonMap(Object[] params) {
         Map<String, Object> paramMap = new LinkedHashMap<>();
         if (params == null || params.length == 0) {
             return paramMap;
         }
         Object param = params[0];
-        JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(param));
+        JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(param));
         paramMap.putAll(jsonObject);
         return paramMap;
     }

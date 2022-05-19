@@ -107,7 +107,7 @@ class HttpClientTool {
             return result;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new RuntimeException("与第三方通信异常");
+            throw new RuntimeException("与第三方通信异常:" + e.getCause());
         }
     }
 

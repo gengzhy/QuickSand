@@ -3,13 +3,10 @@ package xin.cosmos.basic.api;
 import org.springframework.stereotype.Component;
 import xin.cosmos.basic.api.param.AccInfoListByAcptNameParam;
 import xin.cosmos.basic.api.vo.AccInfoListByAcptNameVO;
-import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.framework.annotation.ApiService;
 import xin.cosmos.basic.framework.annotation.ApiServiceOperation;
 import xin.cosmos.basic.framework.enums.ApiRootUrl;
 import xin.cosmos.basic.framework.enums.ApiSubUrl;
-
-import java.util.Map;
 
 /**
  * 票据承兑人信息接口服务类

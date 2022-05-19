@@ -1,6 +1,5 @@
 package xin.cosmos.service;
 
-import io.netty.util.internal.ObjectUtil;
 import org.springframework.stereotype.Service;
 import xin.cosmos.basic.api.IBillAcceptanceApiService;
 import xin.cosmos.basic.api.param.AccInfoListByAcptNameParam;
@@ -30,7 +29,7 @@ public class BillAcceptanceApiService {
      */
     public ResultVO<AccInfoListByAcptNameVO> findAccInfoListByAcptName(String acceptName) {
         AccInfoListByAcptNameParam param = new AccInfoListByAcptNameParam();
-        param.setAcceptanceName(acceptName);
+        param.setBillAcceptanceName(acceptName);
         param.setRandom(ObjectsUtil.randomNumber(5));
         return ResultVO.success(billAcceptanceApiService.findAccInfoListByAcptName(param));
     }

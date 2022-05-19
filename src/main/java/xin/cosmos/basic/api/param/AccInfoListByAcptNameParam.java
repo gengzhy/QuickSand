@@ -11,7 +11,7 @@ public class AccInfoListByAcptNameParam {
 
     @ApiModelProperty(value = "票据承兑人名称")
     @JSONField(name = "acptName")
-    private String acceptanceName;
+    private String billAcceptanceName;
 
     @ApiModelProperty(value = "5位数字随机数")
     @JSONField(name = "random")
