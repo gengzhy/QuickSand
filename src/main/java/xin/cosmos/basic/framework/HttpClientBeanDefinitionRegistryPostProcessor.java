@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * HttpClientServiceFactory的BeanDefinition注册
+ *
+ * @author geng
  */
 @Component
 public class HttpClientBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {

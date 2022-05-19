@@ -9,6 +9,7 @@ import java.lang.reflect.Proxy;
 /**
  * 通过Bean工厂创建JDK动态代理实例
  *
+ * @author geng
  * @param <T>
  */
 @HttpClientScannerPackage(packages = {"xin.cosmos.basic.api"})
@@ -30,7 +31,7 @@ public class HttpClientServiceFactoryBean<T> implements FactoryBean<T> {
 
 
     @Override
-    public Class<?> getObjectType() {
+    public Class<T> getObjectType() {
         return this.serviceInterfaceClass;
     }
 

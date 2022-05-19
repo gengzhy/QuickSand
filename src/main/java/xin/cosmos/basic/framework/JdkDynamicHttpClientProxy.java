@@ -97,15 +97,15 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
         String url;
         if (rootSlash) {
             if (apiSlash) {
-                url = rootSlash + api.substring(1);
+                url = rootUrl + api.substring(1);
             } else {
-                url = rootSlash + api;
+                url = rootUrl + api;
             }
         } else {
             if (apiSlash) {
-                url = rootSlash + api;
+                url = rootUrl + api;
             } else {
-                url = rootSlash + "/" + api;
+                url = rootUrl + "/" + api;
             }
         }
         return url;

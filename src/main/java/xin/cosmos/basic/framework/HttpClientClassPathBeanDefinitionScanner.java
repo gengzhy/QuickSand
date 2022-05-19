@@ -15,6 +15,8 @@ import java.util.Set;
 
 /**
  * 包扫描器
+ *
+ * @author geng
  */
 
 @Slf4j
@@ -95,8 +97,7 @@ public class HttpClientClassPathBeanDefinitionScanner extends ClassPathBeanDefin
             definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
             definition.setBeanClass(this.serviceFactoryBeanClass);
         }
-        beanDefinitions.forEach(holder -> log.info("Successfully registered ServiceFactoryBeanClass Bean: {}-{}",
-                holder.getBeanName(), holder.getBeanDefinition().getBeanClassName()));
+        beanDefinitions.forEach(holder -> log.info("Successfully registered ServiceFactoryBeanClass Bean: {}-{}", holder.getBeanName(), holder.getBeanDefinition().getBeanClassName()));
     }
 
     /**
