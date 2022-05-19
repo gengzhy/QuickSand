@@ -22,7 +22,7 @@ public class HttpClientClassPathBeanDefinitionScanner extends ClassPathBeanDefin
     /**
      * 通过Bean工厂创建JDK动态代理FactoryBean
      */
-    private Class<? extends HttpClientServiceFactoryBean> serviceFactoryBeanClass = HttpClientServiceFactoryBean.class;
+    private final Class<? extends HttpClientServiceFactoryBean> serviceFactoryBeanClass = HttpClientServiceFactoryBean.class;
 
     /**
      * 接口扫描包
@@ -86,12 +86,17 @@ public class HttpClientClassPathBeanDefinitionScanner extends ClassPathBeanDefin
         for (BeanDefinitionHolder holder : beanDefinitions) {
             definition = (GenericBeanDefinition) holder.getBeanDefinition();
             String beanClassName = definition.getBeanClassName();
+            if (beanClassName == null) {
+                continue;
+            }
             log.info("Creating ServiceFactoryBeanClass with name '" + holder.getBeanName() + "' and '" + beanClassName + "' Service Interface");
 
             // 将接口替换为HttpClientServiceFactoryBean注册为BeanDefinition
             definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
             definition.setBeanClass(this.serviceFactoryBeanClass);
         }
+        beanDefinitions.forEach(holder -> log.info("Successfully registered ServiceFactoryBeanClass Bean: {}-{}",
+                holder.getBeanName(), holder.getBeanDefinition().getBeanClassName()));
     }
 
     /**

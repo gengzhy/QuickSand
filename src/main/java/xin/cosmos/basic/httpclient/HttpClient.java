@@ -134,6 +134,10 @@ public class HttpClient {
         if (obj instanceof Map<?, ?>) {
             return (Map<String, Object>) obj;
         }
+        // 如果是数组，取第0个元素
+        if (obj.getClass().isArray()) {
+            obj = ((Object[]) obj)[0];
+        }
         Map<String, Object> map = new LinkedHashMap<>(obj.getClass().getDeclaredFields().length);
         Class<?> clazz = obj.getClass();
         for (Field field : clazz.getDeclaredFields()) {

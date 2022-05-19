@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(value = HttpStatus.OK)
     public ResultVO<?> handleBusinessException(PlatformException ex) {
         log.error("异常错误:{}-{}-{}", ex.getResultCode().name().toLowerCase(), ex.getMessage(), ex);
-        return ResultVO.failed(ex.getResultCode().getMessage());
+        return ResultVO.failed(ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

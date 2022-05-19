@@ -1,23 +1,32 @@
 package xin.cosmos.basic.api;
 
-import io.swagger.annotations.Api;
 import org.springframework.stereotype.Component;
+import xin.cosmos.basic.api.param.AccInfoListByAcptNameParam;
+import xin.cosmos.basic.api.vo.AccInfoListByAcptNameVO;
 import xin.cosmos.basic.define.ResultVO;
+import xin.cosmos.basic.framework.annotation.ApiService;
+import xin.cosmos.basic.framework.annotation.ApiServiceOperation;
+import xin.cosmos.basic.framework.enums.ApiRootUrl;
+import xin.cosmos.basic.framework.enums.ApiSubUrl;
+
+import java.util.Map;
 
 /**
- *
  * 票据承兑人信息接口服务类
+ * @Component 可以可无
  *
  * @author geng
  */
-@Api(tags = "票据承兑信息服务接口")
+@ApiService(ApiRootUrl.SHCPE_DISCLOSURE)
 @Component
 public interface IBillAcceptanceApiService {
 
     /**
-     * 接口测试
-     * @param param
+     * 根据票据承兑人名称查询票据承兑人信息列表
+     *
+     * @param param 请求参数
      * @return
      */
-    ResultVO<String> querySomething(String param);
+    @ApiServiceOperation(ApiSubUrl.SHCPE_DISCLOSURE_FINDACCEPTNAME)
+    AccInfoListByAcptNameVO findAccInfoListByAcptName(AccInfoListByAcptNameParam param);
 }

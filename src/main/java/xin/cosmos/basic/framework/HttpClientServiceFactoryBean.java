@@ -14,7 +14,7 @@ import java.lang.reflect.Proxy;
 @HttpClientScannerPackage(packages = {"xin.cosmos.basic.api"})
 public class HttpClientServiceFactoryBean<T> implements FactoryBean<T> {
 
-    private Class<T> serviceInterfaceClass;
+    private final Class<T> serviceInterfaceClass;
 
     public HttpClientServiceFactoryBean(Class<T> serviceInterfaceClass) {
         this.serviceInterfaceClass = serviceInterfaceClass;

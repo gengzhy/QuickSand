@@ -1,14 +1,19 @@
 package xin.cosmos.basic.framework;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import xin.cosmos.basic.define.ResultVO;
+import xin.cosmos.basic.exception.PlatformException;
+import xin.cosmos.basic.framework.annotation.ApiService;
+import xin.cosmos.basic.framework.annotation.ApiServiceOperation;
+import xin.cosmos.basic.framework.enums.RequestMethod;
 import xin.cosmos.basic.httpclient.HttpClient;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * httpclient对应服务接口的动态代理，基于jdk动态代理
@@ -24,7 +29,7 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
     }
 
     /**
-     * 真正执行动态代理调用的方法
+     * 真正执行动态代理调用的方法执行器
      *
      * @param proxy
      * @param method
@@ -38,14 +43,54 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
             return method.invoke(this, args);
         }
         final Class<T> serviceApiInterface = this.serviceInterfaceClass;
-        Annotation[] annotations = serviceApiInterface.getDeclaredAnnotations();
-        Method declaredMethod = serviceApiInterface.getDeclaredMethod(method.getName(), method.getParameterTypes());
-        Parameter[] parameters = declaredMethod.getParameters();
+        ApiService apiService = serviceApiInterface.getAnnotation(ApiService.class);
+        if (apiService == null) {
+            throw new PlatformException("{%s}接口上缺少必须的注解{@%s}", serviceInterfaceClass.getSimpleName(), ApiService.class.getSimpleName());
+        }
+        ApiServiceOperation apiServiceOperation = method.getAnnotation(ApiServiceOperation.class);
+        if (apiServiceOperation == null) {
+            throw new PlatformException("{接口方法{%s}上缺少必须的注解{%s}", method.getName(), ApiServiceOperation.class.getSimpleName());
+        }
 
-        log.info("请求服务接口类-[{}],请求服务接口方法-[{}],请求参数值-[{}]", serviceApiInterface.getName(), method.getName(), Arrays.toString(args));
-        // TODO 真正执行代理功能的地方
-        String result = HttpClient.create().get("http://liusha.xyz", null, null);
-        log.info("执行接口响应结果：{}", result);
-        return ResultVO.success(result);
+        // 根节点接口与子节点接口是否对应判断
+        if (!apiService.value().equals(apiServiceOperation.value().getRootUrl())) {
+            throw new PlatformException("{%s}接口类注解的参数{%s}与接口方法{%s}的注解参数{%s}不一致",
+                    serviceInterfaceClass.getSimpleName(), apiService.value().name(),
+                    method.getName(), apiServiceOperation.value().getRootUrl().name());
+        }
+        // 请求地址
+        String fullUrl = apiService.value().getRootUrl() + apiServiceOperation.value().getApi();
+
+        log.info("请求服务接口-[{}],请求参数值-[{}] - 请求接口地址[{}]", method.getName(), Arrays.toString(args), fullUrl);
+
+        // 格式化请求参数
+        Map<String, Object> params = ObjectToJsonMap(args);
+        String result;
+        if (RequestMethod.GET.equals(apiServiceOperation.method())) {
+            result = HttpClient.create().get(fullUrl, null, params);
+        } else {
+            result = HttpClient.create().post(fullUrl, null, params);
+        }
+        log.info("接口[{}]响应结果 - {}", fullUrl, result);
+
+        // 反序列化响应结果
+        return JSON.toJavaObject(JSON.parseObject(result), method.getReturnType());
+    }
+
+    /**
+     * 将JavaBean请求参数，使用fastjson转换为map
+     *
+     * @param params 请求参数
+     * @return
+     */
+    private Map<String, Object> ObjectToJsonMap(Object[] params) {
+        Map<String, Object> paramMap = new LinkedHashMap<>();
+        if (params == null || params.length == 0) {
+            return paramMap;
+        }
+        Object param = params[0];
+        JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(param));
+        paramMap.putAll(jsonObject);
+        return paramMap;
     }
 }
