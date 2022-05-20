@@ -9,3 +9,7 @@ spring:
     pathmatch:
       #解决swagger3启动包找不到请求路径NPE问题
       matching-strategy: ant_path_matcher
+
+cust:
+  #是否截取票据承兑人括号前内容
+  sub-bill-acceptance-left-brackets: true
