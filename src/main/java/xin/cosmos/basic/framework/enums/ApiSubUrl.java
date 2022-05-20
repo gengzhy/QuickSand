@@ -18,7 +18,7 @@ public enum ApiSubUrl {
     /**
      * 上海票交所票据承兑人信息披露查询 - 根据票据承兑人名称查询票据承兑信用信息披露
      */
-    SHCPE_DISCLOSURE_FINDSETTLEPAGE(ApiRootUrl.SHCPE_DISCLOSURE, "findAccInfoListByAcptName", "根据票据承兑人名称查询票据承兑信用信息披露"),
+    SHCPE_DISCLOSURE_FINDSETTLEPAGE(ApiRootUrl.SHCPE_DISCLOSURE, "findSettlePage", "根据票据承兑人名称查询票据承兑信用信息披露"),
 
     ;
     private final ApiRootUrl rootUrl;

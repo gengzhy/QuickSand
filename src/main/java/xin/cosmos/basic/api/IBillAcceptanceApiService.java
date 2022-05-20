@@ -2,7 +2,9 @@ package xin.cosmos.basic.api;
 
 import org.springframework.stereotype.Component;
 import xin.cosmos.basic.api.param.AccInfoListByAcptNameParam;
+import xin.cosmos.basic.api.param.FindSettlePageParam;
 import xin.cosmos.basic.api.vo.AccInfoListByAcptNameVO;
+import xin.cosmos.basic.api.vo.FindSettlePageVO;
 import xin.cosmos.basic.framework.annotation.ApiService;
 import xin.cosmos.basic.framework.annotation.ApiServiceOperation;
 import xin.cosmos.basic.framework.enums.ApiRootUrl;
@@ -26,4 +28,13 @@ public interface IBillAcceptanceApiService {
      */
     @ApiServiceOperation(ApiSubUrl.SHCPE_DISCLOSURE_FINDACCEPTNAME)
     AccInfoListByAcptNameVO findAccInfoListByAcptName(AccInfoListByAcptNameParam param);
+
+    /**
+     * 根据票据承兑人名称查询票据承兑人信息列表
+     *
+     * @param param 请求参数
+     * @return
+     */
+    @ApiServiceOperation(ApiSubUrl.SHCPE_DISCLOSURE_FINDSETTLEPAGE)
+    FindSettlePageVO findSettlePage(FindSettlePageParam param);
 }

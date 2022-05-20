@@ -8,6 +8,7 @@ import xin.cosmos.basic.framework.annotation.ApiService;
 import xin.cosmos.basic.framework.annotation.ApiServiceOperation;
 import xin.cosmos.basic.framework.enums.RequestMethod;
 import xin.cosmos.basic.httpclient.HttpClient;
+import xin.cosmos.basic.util.ObjectsUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -23,7 +24,7 @@ import java.util.Map;
 @Slf4j
 public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
 
-    private Class<T> serviceInterfaceClass;
+    private final Class<T> serviceInterfaceClass;
 
     public JdkDynamicHttpClientProxy(Class<T> serviceInterfaceClass) {
         this.serviceInterfaceClass = serviceInterfaceClass;
@@ -47,19 +48,19 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
         ApiService apiService = serviceApiInterface.getAnnotation(ApiService.class);
         if (apiService == null) {
             throw new PlatformException("接口{%s}缺少注解{@%s}",
-                    serviceInterfaceClass.getSimpleName(), ApiService.class.getSimpleName());
+                    serviceApiInterface.getSimpleName(), ApiService.class.getSimpleName());
         }
         ApiServiceOperation apiServiceOperation = method.getAnnotation(ApiServiceOperation.class);
         if (apiServiceOperation == null) {
             throw new PlatformException("{接口方法{%s#%s}缺少注解{@%s}",
-                    serviceInterfaceClass.getSimpleName(), method.getName(), ApiServiceOperation.class.getSimpleName());
+                    serviceApiInterface.getSimpleName(), method.getName(), ApiServiceOperation.class.getSimpleName());
         }
 
         // 根节点接口与子节点接口是否对应判断
         if (!apiService.value().equals(apiServiceOperation.value().getRootUrl())) {
             throw new PlatformException("接口{%s}注解参数{ApiRootUrl#%s}与接口方法{%s#%s}注解参数{ApiRootUrl#%s}类型不一致",
-                    serviceInterfaceClass.getSimpleName(), apiService.value().name(),
-                    serviceInterfaceClass.getSimpleName(),
+                    serviceApiInterface.getSimpleName(), apiService.value().name(),
+                    serviceApiInterface.getSimpleName(),
                     method.getName(), apiServiceOperation.value().getRootUrl().name());
         }
         // 请求地址
@@ -119,7 +120,7 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
      */
     private Map<String, Object> objectToJsonMap(Object[] params) {
         Map<String, Object> paramMap = new LinkedHashMap<>();
-        if (params == null || params.length == 0) {
+        if (ObjectsUtil.isNull(params)) {
             return paramMap;
         }
         Object param = params[0];
