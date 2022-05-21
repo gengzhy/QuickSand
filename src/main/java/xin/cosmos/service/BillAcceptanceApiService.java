@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Service
 public class BillAcceptanceApiService {
+    private static final Pattern PATTERN = Pattern.compile("[(（]+");
 
     private IBillAcceptanceApiService billAcceptanceApiService;
     @Autowired
@@ -130,10 +131,9 @@ public class BillAcceptanceApiService {
 
         // 企业名称模糊查询处理
         if (Boolean.parseBoolean(isSubstrLeftBracket)) {
-            Pattern p = Pattern.compile("[(（]+");
             corpEntities.forEach(e -> {
                 String corpName = e.getCorpName();
-                if (p.matcher(corpName).find()) {
+                if (PATTERN.matcher(corpName).find()) {
                     int i = corpName.indexOf("(");
                     corpName = (i != -1) ? corpName.substring(0, i) : corpName.substring(0, corpName.indexOf("（"));
                     e.setCorpName(corpName);

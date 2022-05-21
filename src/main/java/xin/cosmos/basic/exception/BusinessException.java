@@ -4,6 +4,7 @@ import xin.cosmos.basic.constant.ResultCode;
 
 /**
  * 业务级别的异常类
+ * @author geng
  */
 public class BusinessException extends PlatformException{
 

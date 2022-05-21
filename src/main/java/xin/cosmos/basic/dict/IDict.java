@@ -1,5 +1,7 @@
 package xin.cosmos.basic.dict;
 
+import xin.cosmos.basic.constant.ResultCode;
+import xin.cosmos.basic.exception.BusinessException;
 import xin.cosmos.basic.util.ObjectsUtil;
 
 /**
@@ -26,8 +28,13 @@ public interface IDict<E extends Enum<E>> {
      */
     static <E extends Enum<E> & IDict> E findByName(String enumName, Class<E> clazz) {
         if (ObjectsUtil.isNull(enumName)) {
-            return null;
+            throw new BusinessException(ResultCode.NO_SUCH_DICT, "缺少必须的枚举字典值");
         }
-        return Enum.valueOf(clazz, enumName);
+        try {
+            return Enum.valueOf(clazz, enumName);
+        } catch (Exception e) {
+            throw new BusinessException(ResultCode.NO_SUCH_DICT,
+                    "枚举字典{%s}中不存在枚举值{%s}", clazz.getSimpleName(), enumName);
+        }
     }
 }

@@ -7,14 +7,15 @@ import java.util.regex.Pattern;
 
 /**
  * 平台级别异常类
+ * @author geng
  */
 public class PlatformException extends RuntimeException {
-    private final static Pattern FORMAT_PATTERN = Pattern.compile("%");
+    private static final Pattern FORMAT_PATTERN = Pattern.compile("%");
     private final ResultCode resultCode;
 
     public PlatformException(String message) {
         super(message);
-        this.resultCode = ResultCode.FAILED;
+        this.resultCode = ResultCode.E;
     }
 
     public PlatformException(ResultCode resultCode) {
@@ -31,7 +32,7 @@ public class PlatformException extends RuntimeException {
      * @param args          需格式化的参数
      */
     public PlatformException(String formatMessage, String... args) {
-        this(ResultCode.FAILED, formatMessage, args);
+        this(ResultCode.E, formatMessage, args);
     }
 
     /**
@@ -53,7 +54,7 @@ public class PlatformException extends RuntimeException {
      */
     private static String formatErrorMsg(String message, String[] args) {
         if (args == null || args.length == 0) {
-            return message.replaceAll("%s", "");
+            return message.replace("%s", "");
         }
         int count = 0;
         Matcher m = FORMAT_PATTERN.matcher(message);
@@ -61,7 +62,7 @@ public class PlatformException extends RuntimeException {
             count++;
         }
         if (count != args.length) {
-            return message.replaceAll("%s", "");
+            return message.replace("%s", "");
         }
         return String.format(message, args);
     }

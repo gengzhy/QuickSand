@@ -11,8 +11,8 @@ import xin.cosmos.basic.constant.ResultCode;
 @ApiModel(description = "公共返回类")
 public class ResultVO<T> {
 
-    @ApiModelProperty(value = "响应编码（响应成功返回success，非success均为失败）")
-    private final String code;
+    @ApiModelProperty(value = "响应编码（响应成功返回S，非S均为失败）")
+    private final ResultCode code;
 
     @ApiModelProperty(value = "响应消息")
     private final String message;
@@ -20,13 +20,13 @@ public class ResultVO<T> {
     @ApiModelProperty(value = "响应数据")
     private final T data;
 
-    public ResultVO(String code, String message, T data) {
+    public ResultVO(ResultCode code, String message, T data) {
         this.code = code;
         this.message = message;
         this.data = data;
     }
 
-    public ResultVO(String code, String message) {
+    public ResultVO(ResultCode code, String message) {
         this.code = code;
         this.message = message;
         this.data = null;
@@ -37,30 +37,26 @@ public class ResultVO<T> {
     }
 
     public static <T> ResultVO<T> success(T data) {
-        return success(ResultCode.SUCCESS.getMessage(), data);
+        return success(ResultCode.S.getMessage(), data);
     }
 
     public static <T> ResultVO<T> success(String message, T data) {
-        return new ResultVO<>(ResultCode.SUCCESS.name().toLowerCase(), message, data);
+        return new ResultVO<>(ResultCode.S, message, data);
     }
 
     public static <T> ResultVO<T> failed() {
-        return new ResultVO<>(ResultCode.FAILED.name().toLowerCase(), ResultCode.FAILED.getMessage());
+        return new ResultVO<>(ResultCode.E, ResultCode.E.getMessage());
     }
 
     public static <T> ResultVO<T> failed(String message) {
-        return new ResultVO<>(ResultCode.FAILED.name().toLowerCase(), message);
+        return new ResultVO<>(ResultCode.E, message);
     }
 
     public static <T> ResultVO<T> failed(ResultCode failedCode) {
-        return new ResultVO<>(failedCode.name().toLowerCase(), failedCode.getMessage());
+        return new ResultVO<>(failedCode, failedCode.getMessage());
     }
 
     public static <T> ResultVO<T> failed(ResultCode failedCode, String message) {
-        return new ResultVO<>(failedCode.name().toLowerCase(), message);
-    }
-
-    public static <T> ResultVO<T> failed(String code, String message) {
-        return new ResultVO<>(code, message);
+        return new ResultVO<>(failedCode, message);
     }
 }

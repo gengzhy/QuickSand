@@ -1,9 +1,13 @@
 package xin.cosmos.controller;
 
-import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.read.listener.PageReadListener;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import xin.cosmos.basic.api.param.FindSettlePageParam;
@@ -27,8 +31,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author geng
+ */
 @Api(tags = "票据承兑人信息查询-Controller")
-@RestController
+@Controller
 @RequestMapping(value = "bill/disclosure")
 public class BillAcceptanceController {
     @Autowired
@@ -37,12 +44,14 @@ public class BillAcceptanceController {
     @ApiOperation(value = "根据票据承兑人名称查询票据承兑人信息列表")
     @ApiImplicitParam(name = "acceptName", value = "票据承兑人名称")
     @PostMapping(value = "findAccInfoListByAcptName")
+    @ResponseBody
     public ResultVO<AccInfoListByAcptNameVO> findAccInfoListByAcptName(@Valid @RequestBody SingleParam<String> acceptName) {
         return billAcceptanceApiService.findAccInfoListByAcptName(acceptName);
     }
 
     @ApiOperation(value = "票据承兑信用信息披露查询")
     @PostMapping(value = "findSettlePage")
+    @ResponseBody
     public ResultVO<FindSettlePageVO> findSettlePage(@Valid @RequestBody FindSettlePageParam param) {
         return billAcceptanceApiService.findSettlePage(param);
     }
@@ -85,7 +94,7 @@ public class BillAcceptanceController {
         String fileName = "票据承兑人源数据Excel模板" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssS"));
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("template/bill_source_data_template.xlsx");
         List<BillAcceptanceMetaDataExcelUploadDTO> dtos = new ArrayList<>();
-        EasyExcel.read(inputStream, BillAcceptanceMetaDataExcelUploadDTO.class, new PageReadListener<BillAcceptanceMetaDataExcelUploadDTO>(dtos::addAll)).sheet().doRead();
+        EasyExcelFactory.read(inputStream, BillAcceptanceMetaDataExcelUploadDTO.class, new PageReadListener<BillAcceptanceMetaDataExcelUploadDTO>(dtos::addAll)).sheet().doRead();
         EasyExcelFileUtils.downloadExcel(fileName, response, dtos, BillAcceptanceMetaDataExcelUploadDTO.class);
     }
 }
