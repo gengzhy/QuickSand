@@ -24,7 +24,6 @@ import java.util.Random;
 public class QsBanner implements CommandLineRunner, ApplicationContextAware {
     private static final Random RANDOM = new SecureRandom();
     private static final PrintStream PRINTER = System.out;
-
     private ApplicationContext applicationContext;
 
     private static final String[] BANNER = {
@@ -34,30 +33,19 @@ public class QsBanner implements CommandLineRunner, ApplicationContextAware {
             " ██║▄▄ ██║██║   ██║██║██║     ██╔═██╗ ╚════██║██╔══██║██║╚██╗██║██║  ██║",
             " ╚██████╔╝╚██████╔╝██║╚██████╗██║  ██╗███████║██║  ██║██║ ╚████║██████╔╝",
             "  ╚══▀▀═╝  ╚═════╝ ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ",
-            "                                                                        ",
-            "            ██████╗ ███████╗███╗   ██╗ ██████╗ ███████╗██╗  ██╗██╗   ██╗",
-            "           ██╔════╝ ██╔════╝████╗  ██║██╔════╝ ╚══███╔╝██║  ██║╚██╗ ██╔╝",
-            "           ██║  ███╗█████╗  ██╔██╗ ██║██║  ███╗  ███╔╝ ███████║ ╚████╔╝ ",
-            "           ██║   ██║██╔══╝  ██║╚██╗██║██║   ██║ ███╔╝  ██╔══██║  ╚██╔╝  ",
-            "           ╚██████╔╝███████╗██║ ╚████║╚██████╔╝███████╗██║  ██║   ██║   ",
-            "            ╚═════╝ ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ",
-            "                                           :: Spring Boot :: (v$version)"};
+            " (C)Author($user)   Jdk(v$jdk)   Supported by:Spring Boot(v$version)"};
 
     @Override
     public void run(String... args) {
         AnsiColor color = randomColor();
         for (int i = 0; i < BANNER.length; i++) {
-            if (i <= 5) {
-                PRINTER.println(AnsiOutput.toString(color, BANNER[i]));
-            } else if (i <= 12) {
-                if (i == 6) {
-                    color = randomColor();
-                }
-                PRINTER.println(AnsiOutput.toString(color, BANNER[i]));
-            } else {
-                color = randomColor();
-                PRINTER.println(AnsiOutput.toString(color, BANNER[i].replace("$version", SpringBootVersion.getVersion())));
+            if (i == BANNER.length - 1) {
+                color = AnsiColor.GREEN;
+                BANNER[i] = BANNER[i].replace("$user", System.getProperty("user.name"));
+                BANNER[i] = BANNER[i].replace("$jdk", System.getProperty("java.version"));
+                BANNER[i] = BANNER[i].replace("$version", SpringBootVersion.getVersion());
             }
+            PRINTER.println(AnsiOutput.toString(color, BANNER[i]));
         }
     }
 
