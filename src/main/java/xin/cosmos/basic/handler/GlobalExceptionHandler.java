@@ -56,16 +56,19 @@ public class GlobalExceptionHandler {
 
         if (e instanceof BusinessException) {
             BusinessException ex = (BusinessException) e;
-            log.error("业务级别异常错误:{} - {} - {}", ex.getResultCode().name(), ex.getMessage(), trance(ex.getStackTrace()));
+            log.error("业务级别异常错误:{} - {} \n{stack trace} ==========> \n{}",
+                    ex.getResultCode().name(), ex.getMessage(), trance(ex.getStackTrace()));
             modelAndView.addObject("code", ex.getResultCode());
             modelAndView.addObject("message", ex.getMessage());
         } else if (e instanceof PlatformException) {
             PlatformException ex = (PlatformException) e;
-            log.error("平台级别异常错误:{} - {} - {}", ex.getResultCode().name(), ex.getMessage(), trance(ex.getStackTrace()));
+            log.error("平台级别异常错误:{} - {} \n{stack trace} ==========> \n{}",
+                    ex.getResultCode().name(), ex.getMessage(), trance(ex.getStackTrace()));
             modelAndView.addObject("code", ex.getResultCode());
             modelAndView.addObject("message", ex.getMessage());
         } else {
-            log.error("全局级别异常错误:{} - {}", e.getMessage(), trance(e.getStackTrace()));
+            log.error("全局级别异常错误:{} \n{stack trace} ==========> \n{}",
+                    e.getMessage(), trance(e.getStackTrace()));
             modelAndView.addObject("code", DEFAULT_ERROR_CODE);
             modelAndView.addObject("message", DEFAULT_ERROR_MSG);
         }

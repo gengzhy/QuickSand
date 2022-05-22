@@ -56,7 +56,7 @@ public class ServletErrorController extends BasicErrorController {
     @RequestMapping
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
         final Map<String, Object> body = getErrorAttributes(request, errorAttributeOptions());
-        String error = body.get("path") + " " + body.get("error");
+        String error = body.get("status") + " " + body.get("error");
         log.error("{}", body);
         return new ResponseEntity<>(JSON.parseObject(JSON.toJSONString(ResultVO.failed(error))), HttpStatus.OK);
     }
