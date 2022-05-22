@@ -16,14 +16,14 @@ import java.io.StringWriter;
 import java.util.Arrays;
 
 /**
- * 系统全局移仓处理
+ * 系统全局异常处理
  *
  * @author geng
  */
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    public static final String DEFAULT_ERROR_CODE = "error";
+    public static final String DEFAULT_ERROR_CODE = "ERROR";
     private static final String DEFAULT_ERROR_MSG = "业务繁忙,请稍后再试";
 
 
@@ -51,23 +51,39 @@ public class GlobalExceptionHandler {
     }
 
     private void handleSpecialException(Exception e, HandlerMethod handle, ModelAndView modelAndView) {
-        log.error("异常信息：{}#{}{}", handle.getClass().getName(),
-                handle.getMethod().getName(),
-                Arrays.toString(handle.getMethod().getParameters()));
+        log.error("全局异常接口：{}#{}{}", handle.getBean().getClass().getName(),
+                handle.getMethod().getName(), paramTypes(handle));
+
         if (e instanceof BusinessException) {
             BusinessException ex = (BusinessException) e;
-            log.error("业务级别异常错误:{}-{}-{}", ex.getResultCode().name(), ex.getMessage(), ex);
+            log.error("业务级别异常错误:{} - {} - {}", ex.getResultCode().name(), ex.getMessage(), trance(ex.getStackTrace()));
             modelAndView.addObject("code", ex.getResultCode());
             modelAndView.addObject("message", ex.getMessage());
         } else if (e instanceof PlatformException) {
             PlatformException ex = (PlatformException) e;
-            log.error("平台级别异常错误:{}-{}-{}", ex.getResultCode().name(), ex.getMessage(), ex);
+            log.error("平台级别异常错误:{} - {} - {}", ex.getResultCode().name(), ex.getMessage(), trance(ex.getStackTrace()));
             modelAndView.addObject("code", ex.getResultCode());
             modelAndView.addObject("message", ex.getMessage());
         } else {
-            log.error("平台级别异常错误:{}-{}-{}", e.getMessage(), e.getCause(), e);
+            log.error("全局级别异常错误:{} - {}", e.getMessage(), trance(e.getStackTrace()));
             modelAndView.addObject("code", DEFAULT_ERROR_CODE);
             modelAndView.addObject("message", DEFAULT_ERROR_MSG);
         }
+    }
+
+    private String paramTypes(HandlerMethod handle) {
+        StringBuilder builder = new StringBuilder("(");
+        Arrays.stream(handle.getMethod().getParameterTypes()).forEach(e -> builder.append(e.getName()).append(", "));
+        int lastIndex;
+        if ((lastIndex = builder.lastIndexOf(", ")) != -1) {
+            builder.replace(lastIndex, builder.length(), "");
+        }
+        return builder.append(")").toString();
+    }
+
+    private String trance(StackTraceElement[] traceElements) {
+        StringBuilder builder = new StringBuilder();
+        Arrays.stream(traceElements).forEach(e -> builder.append(e.toString()).append("\n"));
+        return builder.toString();
     }
 }
