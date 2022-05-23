@@ -1,12 +1,11 @@
 package xin.cosmos.basic.api;
 
-import org.springframework.stereotype.Component;
 import xin.cosmos.basic.api.param.AccInfoListByAcptNameParam;
 import xin.cosmos.basic.api.param.FindSettlePageParam;
 import xin.cosmos.basic.api.vo.AccInfoListByAcptNameVO;
 import xin.cosmos.basic.api.vo.FindSettlePageVO;
-import xin.cosmos.basic.framework.annotation.ApiSupport;
 import xin.cosmos.basic.framework.annotation.ApiService;
+import xin.cosmos.basic.framework.annotation.ApiSupport;
 import xin.cosmos.basic.framework.enums.ApiRootUrl;
 import xin.cosmos.basic.framework.enums.ApiSubUrl;
 
@@ -17,7 +16,6 @@ import xin.cosmos.basic.framework.enums.ApiSubUrl;
  * @author geng
  */
 @ApiSupport(ApiRootUrl.SHCPE_DISCLOSURE)
-@Component
 public interface IBillAcceptanceApiService {
 
     /**
