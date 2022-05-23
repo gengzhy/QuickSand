@@ -1,7 +1,6 @@
 package xin.cosmos.basic.framework.annotation;
 
 import xin.cosmos.basic.framework.enums.ApiSubUrl;
-import xin.cosmos.basic.framework.enums.RequestMethod;
 
 import java.lang.annotation.*;
 
@@ -30,4 +29,19 @@ public @interface ApiService {
      * @return
      */
     RequestMethod method() default RequestMethod.GET;
+
+
+    /**
+     * 网络请求方式
+     */
+    enum RequestMethod {
+        /**
+         * get请求
+         */
+        GET,
+        /**
+         * post请求
+         */
+        POST
+    }
 }

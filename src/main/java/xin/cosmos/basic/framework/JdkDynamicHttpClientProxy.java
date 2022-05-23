@@ -4,9 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import xin.cosmos.basic.exception.PlatformException;
-import xin.cosmos.basic.framework.annotation.ApiSupport;
 import xin.cosmos.basic.framework.annotation.ApiService;
-import xin.cosmos.basic.framework.enums.RequestMethod;
+import xin.cosmos.basic.framework.annotation.ApiSupport;
 import xin.cosmos.basic.httpclient.HttpClient;
 import xin.cosmos.basic.util.ObjectsUtil;
 
@@ -63,15 +62,20 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
                     serviceApiInterface.getSimpleName(),
                     method.getName(), apiService.value().getRootUrl().name());
         }
+
+        // 返回类型判断
+        if (Void.class.equals(method.getReturnType())) {
+            throw new PlatformException("接口方法{%s#%s}必须要有返回值", serviceApiInterface.getSimpleName(), method.getName());
+        }
+
         // 请求地址
         String fullUrl = handleUrl(apiSupport, apiService);
-
         log.info("请求服务接口-[{}],请求参数值-[{}] - 请求接口地址[{}]", method.getName(), Arrays.toString(args), fullUrl);
 
         // 格式化请求参数
         Map<String, Object> params = objectToJsonMap(args);
         String result;
-        if (RequestMethod.GET.equals(apiService.method())) {
+        if (ApiService.RequestMethod.GET.equals(apiService.method())) {
             result = HttpClient.create().get(fullUrl, null, params);
         } else {
             result = HttpClient.create().post(fullUrl, null, params);
@@ -79,6 +83,9 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
         log.info("接口[{}]响应结果 - {}", fullUrl, result);
 
         // 反序列化响应结果
+        if (String.class.equals(method.getReturnType())) {
+            return result;
+        }
         return JSON.toJavaObject(JSON.parseObject(result), method.getReturnType());
     }
 
