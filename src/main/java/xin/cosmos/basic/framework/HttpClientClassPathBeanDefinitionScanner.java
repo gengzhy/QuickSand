@@ -8,7 +8,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.type.classreading.MetadataReader;
-import xin.cosmos.basic.framework.annotation.HttpClientScannerPackage;
+import xin.cosmos.basic.framework.annotation.ApiScanner;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -50,9 +50,9 @@ public class HttpClientClassPathBeanDefinitionScanner extends ClassPathBeanDefin
      * 设置接口扫描包
      */
     private void setBasePackage() {
-        if (serviceFactoryBeanClass.isAnnotationPresent(HttpClientScannerPackage.class)) {
-            HttpClientScannerPackage factoryAnnotation = serviceFactoryBeanClass.getAnnotation(HttpClientScannerPackage.class);
-            String[] packages = factoryAnnotation.packages();
+        if (serviceFactoryBeanClass.isAnnotationPresent(ApiScanner.class)) {
+            ApiScanner apiScanner = serviceFactoryBeanClass.getAnnotation(ApiScanner.class);
+            String[] packages = apiScanner.packages();
             if (packages != null && packages.length > 0) {
                 //todo 暂时仅支持一个包扫描，后续改进支持多包扫描
                 final String scanPackage = packages[0];

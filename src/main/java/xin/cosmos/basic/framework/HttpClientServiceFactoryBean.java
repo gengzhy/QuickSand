@@ -1,7 +1,7 @@
 package xin.cosmos.basic.framework;
 
 import org.springframework.beans.factory.FactoryBean;
-import xin.cosmos.basic.framework.annotation.HttpClientScannerPackage;
+import xin.cosmos.basic.framework.annotation.ApiScanner;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -12,7 +12,7 @@ import java.lang.reflect.Proxy;
  * @author geng
  * @param <T>
  */
-@HttpClientScannerPackage(packages = {"xin.cosmos.basic.api"})
+@ApiScanner(packages = {"xin.cosmos.basic.api"})
 public class HttpClientServiceFactoryBean<T> implements FactoryBean<T> {
 
     private final Class<T> serviceInterfaceClass;
