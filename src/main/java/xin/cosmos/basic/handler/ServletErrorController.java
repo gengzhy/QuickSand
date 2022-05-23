@@ -2,6 +2,7 @@ package xin.cosmos.basic.handler;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -16,7 +17,7 @@ import xin.cosmos.basic.define.ResultVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -27,8 +28,11 @@ import java.util.Map;
  */
 @Slf4j
 @Controller
-@RequestMapping("error")
+@RequestMapping("${server.error.path:${error.path:/error}}")
 public class ServletErrorController extends BasicErrorController {
+
+    @Value("${spring.application.name:quick-sand}")
+    private String context;
 
     public ServletErrorController(ErrorAttributes errorProperties) {
         super(errorProperties, new ErrorProperties());
@@ -38,12 +42,14 @@ public class ServletErrorController extends BasicErrorController {
     @RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
         HttpStatus status = getStatus(request);
-        Map<String, Object> model = Collections
-                .unmodifiableMap(getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML)));
+        Map<String, Object> model = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML));
+        Map<String, Object> map = new HashMap<>();
+        map.put("title", context + " - " + status.getReasonPhrase() + "page");
+        map.put("code", model.get("status"));
+        map.put("message", model.get("error"));
         response.setStatus(status.value());
-        ModelAndView modelAndView = resolveErrorView(request, response, status, model);
         log.error("{}", model);
-        return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
+        return new ModelAndView("error/error", map, HttpStatus.OK);
     }
 
     /**
