@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HttpClientScannerPackage {
+public @interface ApiScanner {
 
     /**
      * 需要扫描的接口的包路径

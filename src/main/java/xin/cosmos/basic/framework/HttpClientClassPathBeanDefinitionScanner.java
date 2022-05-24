@@ -8,7 +8,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.type.classreading.MetadataReader;
-import xin.cosmos.basic.framework.annotation.HttpClientScannerPackage;
+import xin.cosmos.basic.framework.annotation.ApiScanner;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -50,9 +50,9 @@ public class HttpClientClassPathBeanDefinitionScanner extends ClassPathBeanDefin
      * 设置接口扫描包
      */
     private void setBasePackage() {
-        if (serviceFactoryBeanClass.isAnnotationPresent(HttpClientScannerPackage.class)) {
-            HttpClientScannerPackage factoryAnnotation = serviceFactoryBeanClass.getAnnotation(HttpClientScannerPackage.class);
-            String[] packages = factoryAnnotation.packages();
+        if (serviceFactoryBeanClass.isAnnotationPresent(ApiScanner.class)) {
+            ApiScanner apiScanner = serviceFactoryBeanClass.getAnnotation(ApiScanner.class);
+            String[] packages = apiScanner.packages();
             if (packages != null && packages.length > 0) {
                 //todo 暂时仅支持一个包扫描，后续改进支持多包扫描
                 final String scanPackage = packages[0];
@@ -91,8 +91,6 @@ public class HttpClientClassPathBeanDefinitionScanner extends ClassPathBeanDefin
             if (beanClassName == null) {
                 continue;
             }
-            log.info("Creating ServiceFactoryBeanClass with name '" + holder.getBeanName() + "' and '" + beanClassName + "' Service Interface");
-
             // 将接口替换为HttpClientServiceFactoryBean注册为BeanDefinition
             definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
             definition.setBeanClass(this.serviceFactoryBeanClass);
@@ -119,7 +117,9 @@ public class HttpClientClassPathBeanDefinitionScanner extends ClassPathBeanDefin
     @Override
     public void afterPropertiesSet() {
         if (this.basePackage == null) {
-            throw new IllegalArgumentException("必须在HttpClientServiceFactoryBean.class上使用注解@HttpClientScannerPackage指定接口扫描包.");
+            throw new IllegalArgumentException("必须在{" +
+                    HttpClientServiceFactoryBean.class.getSimpleName() + "}上使用注解{@" +
+                    ApiScanner.class.getName() + "}指定接口扫描包.");
         }
     }
 }
