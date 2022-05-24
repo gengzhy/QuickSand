@@ -22,6 +22,7 @@
         <springfox-swagger3.version>3.0.0</springfox-swagger3.version>
         <swagger-knife4j.version>3.0.3</swagger-knife4j.version>
         <mysql.version>8.0.29</mysql.version>
+        <druid.version>1.1.12</druid.version>
     </properties>
     <dependencies>
         <dependency>
@@ -123,6 +124,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
         </dependency>
         <!-- end 数据库驱动及引擎 -->
 
