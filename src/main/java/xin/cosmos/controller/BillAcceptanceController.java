@@ -3,7 +3,6 @@ package xin.cosmos.controller;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.read.listener.PageReadListener;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,6 @@ public class BillAcceptanceController {
     private BillAcceptanceApiService billAcceptanceApiService;
 
     @ApiOperation(value = "根据票据承兑人名称查询票据承兑人信息列表")
-    @ApiImplicitParam(name = "acceptName", value = "票据承兑人名称")
     @PostMapping(value = "findAccInfoListByAcptName")
     @ResponseBody
     public ResultVO<AccInfoListByAcptNameVO> findAccInfoListByAcptName(@Valid @RequestBody SingleParam<String> acceptName) {

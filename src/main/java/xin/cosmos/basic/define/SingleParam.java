@@ -11,6 +11,6 @@ import java.io.Serializable;
 public class SingleParam<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "单个请求参数，参数类型由传入的参数类型确定", required = true)
+    @ApiModelProperty(value = "单个请求参数，参数类型由传入的参数类型确定", required = true, example = "某个单参数的值")
     private T key;
 }
