@@ -29,20 +29,6 @@ logging:
     name: qs-server.log
     path: ./logs
 
-# 日志配置
-logging:
-  config: classpath:logback-spring-dev.xml
-  file:
-    name: qs-server.log
-    path: ./logs
-
-# 日志配置
-logging:
-  config: classpath:logback-spring-dev.xml
-  file:
-    name: qs-server.log
-    path: ./logs
-
 cust:
   #是否截取票据承兑人括号前内容
   sub-bill-acceptance-left-brackets: true
