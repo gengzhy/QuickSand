@@ -55,7 +55,6 @@ public class BillAcceptanceApiService {
      * 根据票据承兑人名称查询票据承兑人信息列表
      *
      * @param acceptName 票据承兑人名称
-     * @return
      */
     public ResultVO<AccInfoListByAcptNameVO> findAccInfoListByAcptName(SingleParam<String> acceptName) {
         if (ObjectsUtil.isNull(acceptName) || ObjectsUtil.isNull(acceptName.getKey())) {
@@ -71,7 +70,6 @@ public class BillAcceptanceApiService {
      * 票据承兑信用信息披露查询
      *
      * @param param 请求参数
-     * @return
      */
     public ResultVO<FindSettlePageVO> findSettlePage(FindSettlePageParam param) {
         param.setCurrent(1);
@@ -93,6 +91,8 @@ public class BillAcceptanceApiService {
         List<BillAcceptanceMeta> metas = EasyExcelHelper.doReadExcelData(file.getInputStream(),
                 BillAcceptanceMeta.class, Comparator.comparing(BillAcceptanceMeta::getIndex));
         redisService.setList(Constant.getMetaDataStoreKey(billAcceptanceMetaType.name()), metas);
+        // 导入新数据后，删除标记位
+        redisService.delete(Constant.getDownloadOklistIndexKey(billAcceptanceMetaType.name()));
         metas.forEach(e -> log.info("{}-元数据==>{}", billAcceptanceMetaType.getDesc(), e));
         return "已成功导入" + metas.size() + "条" + billAcceptanceMetaType.getDesc() + "元数据";
     }
@@ -103,16 +103,15 @@ public class BillAcceptanceApiService {
      * 下次再进行爬取时，若缓存中存在爬取失败的数据标志位，仅会爬取失败的数据
      * 当全部爬取成功后，会删除缓存中爬取失败的标志
      *
-     * @return
      */
     public List<BillAcceptanceDisclosureDataExcelDownloadDTO> queryBatchBillAcceptanceDisclosureData(BillAcceptanceExcelDownloadParam param) {
         if (StringUtils.isEmpty(param.getShowMonth())) {
-            throw new RuntimeException("披露信息时点日期不能为空");
+            throw new BusinessException("披露信息时点日期不能为空");
         }
         // 业务类型
         BillAcceptanceMetaType acceptanceBusiType = param.getBusiType();
         if (acceptanceBusiType == null) {
-            throw new RuntimeException("文件下载类型为空");
+            throw new BusinessException("文件下载类型为空");
         }
         String showMonth = (param.getShowMonth().length() > 7) ? param.getShowMonth().substring(0, 7) : param.getShowMonth();
         final AtomicInteger index = new AtomicInteger(0);
