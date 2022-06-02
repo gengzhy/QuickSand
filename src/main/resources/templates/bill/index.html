@@ -18,19 +18,22 @@
         </el-header>
         <el-main>
             <el-tabs v-model="activeTab" type="border-card" @tab-click="handleTabClick" tab-position="left">
-                <el-tab-pane label="元数据导入模板" name="zero">
+                <el-tab-pane label="元数据导入模板" name="zero"
+                             v-loading="loading"
+                             element-loading-text="正在下载元数据模板..."
+                             element-loading-spinner="el-icon-loading">
                     <!--票据承兑人元数据导入模板下载-->
                     <el-row>
                         <el-button type="primary" @click="onDownloadMetaTemplate">下载票据承兑人元数据导入模板</el-button>
                     </el-row>
                 </el-tab-pane>
 
-                <el-tab-pane label="票据承兑信用信息元数据上传" name="one">
-                    <!--票据承兑人元数据导入-->
-                    <el-form action="upload" method="post" enctype="multipart/form-data"
-                             v-loading.fullscreen.lock="loading"
+                <el-tab-pane label="票据承兑信用信息元数据上传" name="one"
+                             v-loading="loading"
                              element-loading-text="正在导入数据..."
                              element-loading-spinner="el-icon-loading">
+                    <!--票据承兑人元数据导入-->
+                    <el-form action="upload" method="post" enctype="multipart/form-data">
                         <P>元数据上传类型：
                             <select name="busiType" id="busiType">
                                 <option v-for="item in businessTypes" :name="item.value" :value="item.value">
@@ -52,13 +55,13 @@
 
                 </el-tab-pane>-->
 
-                <el-tab-pane label="票据承兑信用信息披露文件下载" name="three">
+                <el-tab-pane label="票据承兑信用信息披露文件下载" name="three"
+                             v-loading.fullscreen.lock="loading"
+                             element-loading-text="正在下载信用披露数据..."
+                             element-loading-spinner="el-icon-loading">
                     <el-form ref="form" label-position="right"
                              :model="formData" label-width="80px" style="width: 60%"
-                             :rules="rules"
-                             v-loading.fullscreen.lock="loading"
-                             element-loading-text="正在下载数据..."
-                             element-loading-spinner="el-icon-loading">
+                             :rules="rules">
                         <el-form-item label="业务类型" label-width="200px" prop="businessType">
                             <el-select v-model="formData.businessType" placeholder="请选择业务类型">
                                 <el-option v-for="item in businessTypes" :key="item.value" :label="item.name"
