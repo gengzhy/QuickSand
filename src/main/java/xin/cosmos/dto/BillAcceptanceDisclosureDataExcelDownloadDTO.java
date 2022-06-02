@@ -51,7 +51,7 @@ public class BillAcceptanceDisclosureDataExcelDownloadDTO {
     private String entRemark;
 
     @ExcelIgnore
-    @ExcelProperty(value = "entDetailRemark")
+    @ExcelProperty(value = "企业详细备注")
     private String entDetailRemark;
 
     @ExcelIgnore

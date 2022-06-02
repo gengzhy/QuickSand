@@ -1,10 +1,9 @@
 package xin.cosmos.entity;
 
-import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceBusiType;
+import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceMetaType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,5 +18,5 @@ public class BillAcceptanceExcelDownloadParam {
 
     @NotNull
     @ApiModelProperty(value = "业务类型",example = "META_GUIZHOU_TOP100")
-    private BillAcceptanceBusiType busiType;
+    private BillAcceptanceMetaType busiType;
 }

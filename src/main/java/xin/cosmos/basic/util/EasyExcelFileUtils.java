@@ -38,6 +38,7 @@ import java.util.List;
  *
  * @author geng
  */
+@Deprecated
 @Slf4j
 public class EasyExcelFileUtils {
 

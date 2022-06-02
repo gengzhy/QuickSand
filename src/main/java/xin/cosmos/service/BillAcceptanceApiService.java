@@ -20,7 +20,7 @@ import xin.cosmos.basic.constant.Constant;
 import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.define.SingleParam;
 import xin.cosmos.basic.dict.IDict;
-import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceBusiType;
+import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceMetaType;
 import xin.cosmos.basic.exception.BusinessException;
 import xin.cosmos.basic.util.ObjectsUtil;
 import xin.cosmos.dto.BillAcceptanceDisclosureDataExcelDownloadDTO;
@@ -93,10 +93,7 @@ public class BillAcceptanceApiService {
     @SneakyThrows
     public void uploadBillAcceptanceMetaData(MultipartFile file, String busiType) {
         // 业务类型
-        BillAcceptanceBusiType acceptanceBusiType;
-        if ((acceptanceBusiType = IDict.findByName(busiType, BillAcceptanceBusiType.class)) == null) {
-            throw new RuntimeException("文件下载类型为空");
-        }
+        BillAcceptanceMetaType acceptanceBusiType = IDict.findByName(busiType, BillAcceptanceMetaType.class);
         List<BillAcceptanceMetaDataExcelUploadDTO> corpEntities = new LinkedList<>();
         EasyExcel.read(file.getInputStream(), BillAcceptanceMetaDataExcelUploadDTO.class,
                 new PageReadListener<BillAcceptanceMetaDataExcelUploadDTO>(list -> {
@@ -119,7 +116,7 @@ public class BillAcceptanceApiService {
             throw new RuntimeException("披露信息时点日期不能为空");
         }
         // 业务类型
-        BillAcceptanceBusiType acceptanceBusiType = param.getBusiType();
+        BillAcceptanceMetaType acceptanceBusiType = param.getBusiType();
         if (acceptanceBusiType == null) {
             throw new RuntimeException("文件下载类型为空");
         }
