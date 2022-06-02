@@ -193,12 +193,12 @@
                             data: {"showMonth": this.formData.showMonth, "busiType": _this.formData.businessType},
                             responseType: 'blob'
                         }).then(res => {
+                            this.loading = false
                             if (res.headers["content-type"] === "application/json") {
                                 this.$message.error(res.data.message)
                             } else {
                                 download(res)
                             }
-                            this.loading = false
                         }).catch(err => {
                             this.loading = false
                             this.$message.error("请求处理失败" + err)
