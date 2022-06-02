@@ -12,6 +12,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import xin.cosmos.basic.define.ResultVO;
+import xin.cosmos.basic.easyexcel.framework.BatchPageReadListener;
 import xin.cosmos.basic.easyexcel.template.HeadVO;
 import xin.cosmos.basic.exception.PlatformException;
 import xin.cosmos.basic.util.BeanMapUtil;
@@ -55,7 +56,7 @@ public class EasyExcelHelper {
      */
     public static <T> List<T> doReadExcelData(InputStream stream, Class<T> entityClass, Comparator<T> comparator) {
         List<T> data = new LinkedList<>();
-        EasyExcelFactory.read(stream, entityClass, new PageReadListener<T>(list -> {
+        EasyExcelFactory.read(stream, entityClass, new BatchPageReadListener<T>(list -> {
             if (comparator != null) {
                 list.sort(comparator);
             }
@@ -69,8 +70,6 @@ public class EasyExcelHelper {
      *
      * @param file        MultipartFile文件
      * @param entityClass 读取转换的Java对象类型
-     * @param <T>
-     * @return
      */
     @SneakyThrows
     public static <T> List<T> doReadExcelData(MultipartFile file, Class<T> entityClass) {
@@ -82,13 +81,11 @@ public class EasyExcelHelper {
      *
      * @param file        File文件
      * @param entityClass 读取转换的Java对象类型
-     * @param <T>
-     * @return
      */
     @SneakyThrows
     public static <T> List<T> doReadExcelData(File file, Class<T> entityClass) {
         List<T> data = new LinkedList<>();
-        EasyExcelFactory.read(file, entityClass, new PageReadListener<T>(data::addAll)).sheet().doRead();
+        EasyExcelFactory.read(file, entityClass, new BatchPageReadListener<T>(data::addAll)).sheet().doRead();
         return data;
     }
 
