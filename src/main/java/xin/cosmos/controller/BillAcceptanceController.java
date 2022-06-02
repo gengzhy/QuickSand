@@ -12,6 +12,7 @@ import xin.cosmos.basic.api.vo.AccInfoListByAcptNameVO;
 import xin.cosmos.basic.api.vo.FindSettlePageVO;
 import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.define.SingleParam;
+import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceMetaType;
 import xin.cosmos.basic.easyexcel.helper.EasyExcelHelper;
 import xin.cosmos.dto.BillAcceptanceDisclosureDataExcelDownloadDTO;
 import xin.cosmos.dto.BillAcceptanceMeta;
@@ -23,7 +24,10 @@ import javax.validation.Valid;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author geng
@@ -34,6 +38,20 @@ import java.util.List;
 public class BillAcceptanceController {
     @Autowired
     private BillAcceptanceApiService billAcceptanceApiService;
+
+    @ApiOperation(value = "票据承兑人信用披露信息-元数据类类型列表")
+    @PostMapping(value = "business/types/get")
+    @ResponseBody
+    public ResultVO<List<Map<String, String>>> getBusinessTypes() {
+        List<Map<String, String>> businessTypes = new ArrayList<>();
+        for (BillAcceptanceMetaType type : BillAcceptanceMetaType.values()) {
+            businessTypes.add(new HashMap() {{
+                put("name", type.getDesc());
+                put("value", type.name());
+            }});
+        }
+        return ResultVO.success(businessTypes);
+    }
 
     @ApiOperation(value = "根据票据承兑人名称查询票据承兑人信息列表")
     @PostMapping(value = "findAccInfoListByAcptName")

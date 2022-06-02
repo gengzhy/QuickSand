@@ -118,7 +118,7 @@
             },
             init() {
                 // 初始化业务类型列表
-                axios.post("/qs/getBusinessTypes").then(res => {
+                axios.post("/qs/bill/disclosure/business/types/get").then(res => {
                     const result = res.data
                     if (result.code === 'S') {
                         this.businessTypes = result.data
