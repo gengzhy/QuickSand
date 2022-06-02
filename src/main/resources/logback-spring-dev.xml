@@ -45,7 +45,7 @@
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 日志归档 -->
-            <fileNamePattern>${logPath}/back/${logName}-%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>${logPath}/back/${logName}-%d{yyyyMMdd}.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>2620KB</maxFileSize>
@@ -72,16 +72,15 @@
         第二种就是单独给dao下目录配置debug模式，代码如下，这样配置sql语句会打印，其他还是正常info级别： 【logging.level.org.mybatis=debug
         logging.level.dao=debug】 -->
 
-    <!-- root节点是必选节点，用来指定最基础的日志输出级别，只有一个level属性 level:用来设置打印级别，大小写无关：TRACE,
-        DEBUG, INFO, WARN, ERROR, ALL 和 OFF， 不能设置为INHERITED或者同义词NULL。默认是DEBUG 可以包含零个或多个元素，标识这个appender将会添加到这个logger。 -->
-
     <!-- 4. 最终的策略 -->
     <!-- 4.1 开发环境:打印控制台 -->
     <springProfile name="dev">
-        <logger name="com" level="debug"/>
+        <logger name="xin" level="debug"/>
     </springProfile>
 
-    <root level="debug">
+    <!-- root节点是必选节点，用来指定最基础的日志输出级别，只有一个level属性 level:用来设置打印级别，大小写无关：TRACE,
+        DEBUG, INFO, WARN, ERROR, ALL 和 OFF， 不能设置为INHERITED或者同义词NULL。默认是DEBUG 可以包含零个或多个元素，标识这个appender将会添加到这个logger。 -->
+    <root level="info">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="LOG_FILE"/>
     </root>

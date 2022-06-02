@@ -1,7 +1,5 @@
 package xin.cosmos.service;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.listener.PageReadListener;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,10 +19,11 @@ import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.define.SingleParam;
 import xin.cosmos.basic.dict.IDict;
 import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceMetaType;
+import xin.cosmos.basic.easyexcel.helper.EasyExcelHelper;
 import xin.cosmos.basic.exception.BusinessException;
 import xin.cosmos.basic.util.ObjectsUtil;
 import xin.cosmos.dto.BillAcceptanceDisclosureDataExcelDownloadDTO;
-import xin.cosmos.dto.BillAcceptanceMetaDataExcelUploadDTO;
+import xin.cosmos.dto.BillAcceptanceMeta;
 import xin.cosmos.entity.BillAcceptanceExcelDownloadParam;
 
 import java.util.Comparator;
@@ -44,16 +43,13 @@ import java.util.regex.Pattern;
 public class BillAcceptanceApiService {
     private static final Pattern PATTERN = Pattern.compile("[(（]+");
 
+    @Autowired(required = false)
     private IBillAcceptanceApiService billAcceptanceApiService;
     @Autowired
     private RedisService redisService;
 
     @Value("sub-bill-acceptance-left-brackets:false")
     private String isSubstrLeftBracket;
-
-    public BillAcceptanceApiService(IBillAcceptanceApiService billAcceptanceApiService) {
-        this.billAcceptanceApiService = billAcceptanceApiService;
-    }
 
     /**
      * 根据票据承兑人名称查询票据承兑人信息列表
@@ -91,16 +87,14 @@ public class BillAcceptanceApiService {
      * @param busiType 业务类型
      */
     @SneakyThrows
-    public void uploadBillAcceptanceMetaData(MultipartFile file, String busiType) {
+    public String uploadBillAcceptanceMetaData(MultipartFile file, String busiType) {
         // 业务类型
-        BillAcceptanceMetaType acceptanceBusiType = IDict.findByName(busiType, BillAcceptanceMetaType.class);
-        List<BillAcceptanceMetaDataExcelUploadDTO> corpEntities = new LinkedList<>();
-        EasyExcel.read(file.getInputStream(), BillAcceptanceMetaDataExcelUploadDTO.class,
-                new PageReadListener<BillAcceptanceMetaDataExcelUploadDTO>(list -> {
-                    list.sort(Comparator.comparing(BillAcceptanceMetaDataExcelUploadDTO::getIndex));
-                    corpEntities.addAll(list);
-                })).sheet().doRead();
-        redisService.setList(Constant.getMetaDataStoreKey(acceptanceBusiType.name()), corpEntities);
+        BillAcceptanceMetaType billAcceptanceMetaType = IDict.findByName(busiType, BillAcceptanceMetaType.class);
+        List<BillAcceptanceMeta> metas = EasyExcelHelper.doReadExcelData(file.getInputStream(),
+                BillAcceptanceMeta.class, Comparator.comparing(BillAcceptanceMeta::getIndex));
+        redisService.setList(Constant.getMetaDataStoreKey(billAcceptanceMetaType.name()), metas);
+        metas.forEach(e -> log.info("{}-元数据==>{}", billAcceptanceMetaType.getDesc(), e));
+        return "已成功导入" + metas.size() + "条" + billAcceptanceMetaType.getDesc() + "元数据";
     }
 
     /**
@@ -122,7 +116,7 @@ public class BillAcceptanceApiService {
         }
         String showMonth = (param.getShowMonth().length() > 7) ? param.getShowMonth().substring(0, 7) : param.getShowMonth();
         final AtomicInteger index = new AtomicInteger(0);
-        List<BillAcceptanceMetaDataExcelUploadDTO> corpEntities = redisService.getList(Constant.getMetaDataStoreKey(acceptanceBusiType.name()));
+        List<BillAcceptanceMeta> corpEntities = redisService.getList(Constant.getMetaDataStoreKey(acceptanceBusiType.name()));
         Assert.notEmpty(corpEntities, "请先上传票据承兑人源数据后再进行下载");
         final List<BillAcceptanceDisclosureDataExcelDownloadDTO> data = new LinkedList<>();
 
@@ -142,9 +136,9 @@ public class BillAcceptanceApiService {
         String handleSuccessDownloadIndex = Constant.getDownloadOklistIndexKey(acceptanceBusiType.name());
 
         // 升序排序
-        corpEntities.sort(Comparator.comparing(BillAcceptanceMetaDataExcelUploadDTO::getIndex));
+        corpEntities.sort(Comparator.comparing(BillAcceptanceMeta::getIndex));
         // 异常断点数据处理
-        final List<BillAcceptanceMetaDataExcelUploadDTO> finalNewDataSource = new LinkedList<>();
+        final List<BillAcceptanceMeta> finalNewDataSource = new LinkedList<>();
         Integer handleOkIndex = Optional.ofNullable((Integer) redisService.get(handleSuccessDownloadIndex)).orElse(0);
         if (handleOkIndex == 0) {
             finalNewDataSource.addAll(corpEntities);
@@ -156,10 +150,10 @@ public class BillAcceptanceApiService {
 
         // 接口数据查询处理
         boolean isFullOk = true;
-        String currentHandleCorp = "";
+        String currentHandleCorp;
         AccInfoListByAcptNameParam acptNameParam;
         FindSettlePageParam settlePageParam;
-        for (BillAcceptanceMetaDataExcelUploadDTO corpEntity : finalNewDataSource) {
+        for (BillAcceptanceMeta corpEntity : finalNewDataSource) {
             currentHandleCorp = corpEntity.getCorpName();
             // 处理数据，捕获异常，防止成功的数据丢失
             try {

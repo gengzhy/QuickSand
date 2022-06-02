@@ -36,6 +36,10 @@ public class ResultVO<T> {
         return success(null);
     }
 
+    public static <T> ResultVO<T> success(String message) {
+        return success(message, null);
+    }
+
     public static <T> ResultVO<T> success(T data) {
         return success(ResultCode.S.getMessage(), data);
     }

@@ -1,13 +1,16 @@
 package xin.cosmos.basic.easyexcel.helper;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
 import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.easyexcel.template.HeadVO;
 import xin.cosmos.basic.exception.PlatformException;
@@ -15,6 +18,8 @@ import xin.cosmos.basic.util.BeanMapUtil;
 import xin.cosmos.basic.util.ObjectsUtil;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.*;
@@ -24,6 +29,68 @@ import java.util.*;
  */
 @Slf4j
 public class EasyExcelHelper {
+
+    /**
+     * 读取Excel文件
+     *
+     * @param stream      文件流
+     * @param entityClass 读取转换的Java对象类型
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> doReadExcelData(InputStream stream, Class<T> entityClass) {
+        List<T> data = new LinkedList<>();
+        EasyExcelFactory.read(stream, entityClass, new PageReadListener<T>(data::addAll)).sheet().doRead();
+        return data;
+    }
+
+    /**
+     * 读取Excel文件
+     *
+     * @param stream      文件流
+     * @param entityClass 读取转换的Java对象类型
+     * @param comparator  排序比较器
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> doReadExcelData(InputStream stream, Class<T> entityClass, Comparator<T> comparator) {
+        List<T> data = new LinkedList<>();
+        EasyExcelFactory.read(stream, entityClass, new PageReadListener<T>(list -> {
+            if (comparator != null) {
+                list.sort(comparator);
+            }
+            data.addAll(list);
+        })).sheet().doRead();
+        return data;
+    }
+
+    /**
+     * 读取Excel文件
+     *
+     * @param file        MultipartFile文件
+     * @param entityClass 读取转换的Java对象类型
+     * @param <T>
+     * @return
+     */
+    @SneakyThrows
+    public static <T> List<T> doReadExcelData(MultipartFile file, Class<T> entityClass) {
+        return doReadExcelData(file.getInputStream(), entityClass);
+    }
+
+    /**
+     * 读取Excel文件
+     *
+     * @param file        File文件
+     * @param entityClass 读取转换的Java对象类型
+     * @param <T>
+     * @return
+     */
+    @SneakyThrows
+    public static <T> List<T> doReadExcelData(File file, Class<T> entityClass) {
+        List<T> data = new LinkedList<>();
+        EasyExcelFactory.read(file, entityClass, new PageReadListener<T>(data::addAll)).sheet().doRead();
+        return data;
+    }
 
     /**
      * Excel数据浏览器下载
@@ -50,17 +117,27 @@ public class EasyExcelHelper {
     /**
      * Excel数据浏览器下载
      * <p>
-     * 注：参数-excelDataType 需要自定义实体，且在实体类中使用注解 @{@linkplain com.alibaba.excel.annotation.ExcelProperty}指定导出的列的标题名称
-     * e.g:
-     * public class Person {
+     * 前端下载js代码示例：
+     * <pre>
+     * function downloadFile(bytes, fileName) {
+     *    const blob = new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+     *    if (window.navigator.msSaveOrOpenBlob) { // 兼容IE10
+     *          navigator.msSaveBlob(blob, fileName)
+     *    } else {
+     *         const url = window.URL.createObjectURL(blob);
+     *         const a = document.createElement('a');
+     *         a.href = url;
+     *         a.download = fileName;
+     *         a.click();
+     *         window.URL.revokeObjectURL(url);
+     *    }
+     * }
+     * </pre>
      *
      * @param excelFileName 下载文件名称
      * @param response      响应容器
      * @param data          需下载数据
-     * @param entityClazz   下载数据Bean实体类型
-     * @ExcelProperty(value="姓名") private String name;
-     * // getter/setter省略
-     * }
+     * @param entityClazz   下载数据Bean实体类型，苏醒必须使用注解<code>@ExcelProperty</code>中value指定写出列的表头吗，名称
      */
     public static <T> void downloadExcelToResponse(HttpServletResponse response, String excelFileName, List<T> data, Class<T> entityClazz) {
         if (ObjectsUtil.isNull(data)) {

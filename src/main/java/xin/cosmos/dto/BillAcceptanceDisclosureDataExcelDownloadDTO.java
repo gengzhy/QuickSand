@@ -55,5 +55,6 @@ public class BillAcceptanceDisclosureDataExcelDownloadDTO {
     private String entDetailRemark;
 
     @ExcelIgnore
+    @ExcelProperty(value = "披露状态")
     private ShowStatus showStatus;
 }

@@ -1,7 +1,5 @@
 package xin.cosmos.controller;
 
-import com.alibaba.excel.EasyExcelFactory;
-import com.alibaba.excel.read.listener.PageReadListener;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -16,7 +14,7 @@ import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.define.SingleParam;
 import xin.cosmos.basic.easyexcel.helper.EasyExcelHelper;
 import xin.cosmos.dto.BillAcceptanceDisclosureDataExcelDownloadDTO;
-import xin.cosmos.dto.BillAcceptanceMetaDataExcelUploadDTO;
+import xin.cosmos.dto.BillAcceptanceMeta;
 import xin.cosmos.entity.BillAcceptanceExcelDownloadParam;
 import xin.cosmos.service.BillAcceptanceApiService;
 
@@ -25,7 +23,6 @@ import javax.validation.Valid;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,11 +54,11 @@ public class BillAcceptanceController {
     @PostMapping("/upload/meta/data")
     public ResultVO<?> upload(@ApiParam(name = "file", value = "票据承兑人元数据", required = true) @RequestPart(value = "file") MultipartFile file,
                               @ApiParam(name = "busiType", value = "业务类型", required = true) @RequestParam("busiType") String busiType) {
-        billAcceptanceApiService.uploadBillAcceptanceMetaData(file, busiType);
-        return ResultVO.success();
+        String msg = billAcceptanceApiService.uploadBillAcceptanceMetaData(file, busiType);
+        return ResultVO.success(msg);
     }
 
-    @ApiOperation(value = "票据承兑人信用披露信息批量下载(Post)", produces = "application/octet-stream")
+    @ApiOperation(value = "票据承兑人信用披露信息批量下载", produces = "application/octet-stream")
     @ResponseBody
     @PostMapping("/disclosure/web/download")
     public void downloadPostBatchBillAcceptanceDisclosureDataExcelFile(@Valid @RequestBody BillAcceptanceExcelDownloadParam param, HttpServletResponse response) {
@@ -75,10 +72,9 @@ public class BillAcceptanceController {
     @ResponseBody
     @PostMapping("/download/template")
     public void downloadExcelFile(HttpServletResponse response) {
-        String fileName = "票据承兑人源数据Excel模板" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssS"));
+        String fileName = "票据承兑人元数据模板v" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssS"));
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("template/bill_source_data_template.xlsx");
-        List<BillAcceptanceMetaDataExcelUploadDTO> dtos = new ArrayList<>();
-        EasyExcelFactory.read(inputStream, BillAcceptanceMetaDataExcelUploadDTO.class, new PageReadListener<BillAcceptanceMetaDataExcelUploadDTO>(dtos::addAll)).sheet().doRead();
-        EasyExcelHelper.downloadExcelToResponse(response, fileName, dtos, BillAcceptanceMetaDataExcelUploadDTO.class);
+        List<BillAcceptanceMeta> data = EasyExcelHelper.doReadExcelData(inputStream, BillAcceptanceMeta.class);
+        EasyExcelHelper.downloadExcelToResponse(response, fileName, data, BillAcceptanceMeta.class);
     }
 }

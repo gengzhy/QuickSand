@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>首页</title>
+    <title>系统管理首页</title>
     <link rel="stylesheet" th:href="@{/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <script th:src="@{/js/vue.js}"></script>
@@ -14,42 +14,20 @@
 <div id="app">
     <el-container>
         <el-header>
-            <h1>票据承兑信用信息披露文件下载</h1>
+            <h1><a href="/qs" title="重新加载页面">系统管理首页</a></h1>
         </el-header>
         <el-main>
 
-            <el-form ref="form" label-position="right"
-                     :model="formData" label-width="80px" style="width: 60%"
-                     :rules="rules" v-loading.fullscreen.lock="loading">
-                <el-form-item label="业务类型" label-width="200px" prop="businessType">
-                    <el-select v-model="formData.businessType" placeholder="请选择业务类型">
-                        <el-option v-for="item in businessTypes" :key="item.value" :label="item.name"
-                                   :value="item.value"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="披露时点月份" label-width="200px" prop="showMonth">
-                    <el-date-picker type="month" format="yyyy年MM月" value-format="yyyy-MM"
-                                    placeholder="请选择披露时点月份" v-model="formData.showMonth"></el-date-picker>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="onDownload('form')">下载披露文件</el-button>
-                    <el-button @click="onReset('form')">重置</el-button>
-                </el-form-item>
-            </el-form>
-
-            <!--其他-->
-            <el-row>
-                <!--<el-button>默认按钮</el-button>
-                <el-button type="primary">主要按钮</el-button>
-                <el-button type="success">成功按钮</el-button>
-                <el-button type="info">信息按钮</el-button>-->
-                <el-button type="warning" @click="onDownloadMetaTemplate">下载票据承兑人元数据导入模板</el-button>
-                <!--<el-button type="danger">危险按钮</el-button>-->
+        <el-row :gutter="12">
+                <el-col :span="8" v-for="item in urls">
+                    <el-card shadow="hover" body-style="{ padding: '40px'}">
+                        <a :href="item.url"><i :class="item.icon"></i>{{item.name}}</a>
+                    </el-card>
+                </el-col>
             </el-row>
-
         </el-main>
         <el-footer>
-            <p>@2022 Ian Geng</p>
+            <p>@{{year}} Ian</p>
         </el-footer>
     </el-container>
 </div>
@@ -59,86 +37,15 @@
     new Vue({
         el: "#app",
         data: {
-            loading: false,
-            businessTypes: [],
-            formData: {
-                // 业务类型
-                businessType: "",
-                // 披露时点
-                showMonth: ""
-            },
-            rules: {
-                businessType: [
-                    {required: true, message: '请选择业务类型', trigger: 'change'}
-                ],
-                showMonth: [
-                    {required: true, message: '请选择披露时点月份', trigger: 'change'}
-                ]
-            }
+            year: 2022,
+            urls: []// 其他功能节点页面url集合
         },
         created: function () {
-            this.init()
+            this.year = new Date().getFullYear()
+            // 装载功能节点数据
+            this.urls.push({'name': '票据承兑人信用披露信息管理', 'url': '/qs/bill/info', 'icon': 'el-icon-user-solid'})
         },
-        methods: {
-            init() {
-                // 初始化业务类型列表
-                axios.post("getBusinessTypes").then(res => {
-                    const result = res.data
-                    if (result.code === 'S') {
-                        this.businessTypes = result.data
-                    } else {
-                        this.$message.error(result.message);
-                    }
-                }).catch(err => this.$message.error("请求处理失败" + err))
-            },
-
-            // 下载票据承兑人信用披露文件
-            onDownload(form) {
-                const _this = this
-                this.$refs[form].validate((valid) => {
-                    if (valid) {
-                        this.loading = true
-                        axios({
-                            method: 'post',
-                            url: 'bill/disclosure/disclosure/web/download',
-                            data: {"showMonth": this.formData.showMonth, "busiType": _this.formData.businessType},
-                            responseType: 'blob'
-                        }).then(res => {
-                            if (res.headers["content-type"] === "application/json") {
-                                this.$message.error(res.data.message)
-                            } else {
-                                download(res)
-                            }
-                            this.loading = false
-                        }).catch(err => {
-                            this.loading = false
-                            this.$message.error("请求处理失败" + err)
-                        })
-                    }
-                });
-            },
-
-            // 票据承兑人元数据模板下载
-            onDownloadMetaTemplate() {
-                this.loading = true
-                axios({
-                    method: 'post',
-                    url: 'bill/disclosure/download/template',
-                    responseType: 'blob'
-                }).then(res => {
-                    this.loading = false
-                    download(res)
-                }).catch(err => {
-                    this.loading = false
-                    this.$message.error("请求处理失败" + err)
-                })
-            },
-
-            // 重置
-            onReset(form) {
-                this.$refs[form].resetFields();
-            }
-        }
+        methods: {}
     })
 
 </script>

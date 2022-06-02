@@ -17,9 +17,14 @@ import java.util.*;
 public class HomeController {
 
     @GetMapping(value = "/")
-    public String toHomePage(ModelMap map) {
-        map.addAttribute("title", "欢迎来到首页");
+    public String toHomePage() {
         return "index";
+    }
+
+    @ApiOperation(value = "票据承兑人信用披露信息管理")
+    @GetMapping(value = "/bill/info")
+    public String toBillInfoPage() {
+        return "bill/index";
     }
 
     @ApiOperation(value = "票据承兑人信用披露信息-元数据类类型列表")

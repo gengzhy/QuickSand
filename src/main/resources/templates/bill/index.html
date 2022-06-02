@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>票据承兑人信用披露信息管理</title>
+    <link rel="stylesheet" th:href="@{/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <script th:src="@{/js/vue.js}"></script>
+    <script th:src="@{/element-ui/lib/index.js}"></script>
+    <script th:src="@{/js/axios.min.js}"></script>
+    <script th:src="@{/js/excel.js}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <h1><a href="/qs" title="返回系统首页">票据承兑人信用披露信息管理</a></h1>
+        </el-header>
+        <el-main>
+            <el-tabs v-model="activeTab" type="border-card" @tab-click="handleTabClick" tab-position="left">
+                <el-tab-pane label="元数据导入模板" name="zero">
+                    <!--票据承兑人元数据导入模板下载-->
+                    <el-row>
+                        <el-button type="primary" @click="onDownloadMetaTemplate">下载票据承兑人元数据导入模板</el-button>
+                    </el-row>
+                </el-tab-pane>
+
+                <el-tab-pane label="票据承兑信用信息元数据上传" name="one">
+                    <!--票据承兑人元数据导入-->
+                    <el-form action="upload" method="post" enctype="multipart/form-data"
+                             v-loading.fullscreen.lock="loading"
+                             element-loading-text="正在导入数据..."
+                             element-loading-spinner="el-icon-loading">
+                        <P>元数据上传类型：
+                            <select name="busiType" id="busiType">
+                                <option v-for="item in businessTypes" :name="item.value" :value="item.value">
+                                    {{item.name}}
+                                </option>
+                            </select>
+                        </P>
+                        <p>文件：
+                            <input type="file" id="excel-file" name="file" multiple="multiple" accept=".xlsx,.xls"/>
+                        </p>
+                        <p>
+                            <el-button type="primary" @click="fileUpload()">上传</el-button>
+                        </p>
+                    </el-form>
+                </el-tab-pane>
+
+                <!--<el-tab-pane label="票据承兑信用信息披露信息查询" name="two">
+                    （功能开发中...）
+
+                </el-tab-pane>-->
+
+                <el-tab-pane label="票据承兑信用信息披露文件下载" name="three">
+                    <el-form ref="form" label-position="right"
+                             :model="formData" label-width="80px" style="width: 60%"
+                             :rules="rules"
+                             v-loading.fullscreen.lock="loading"
+                             element-loading-text="正在下载数据..."
+                             element-loading-spinner="el-icon-loading">
+                        <el-form-item label="业务类型" label-width="200px" prop="businessType">
+                            <el-select v-model="formData.businessType" placeholder="请选择业务类型">
+                                <el-option v-for="item in businessTypes" :key="item.value" :label="item.name"
+                                           :value="item.value"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="披露时点月份" label-width="200px" prop="showMonth">
+                            <el-date-picker type="month" format="yyyy年MM月" value-format="yyyy-MM"
+                                            placeholder="请选择披露时点月份" v-model="formData.showMonth"></el-date-picker>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="onDownload('form')">下载披露文件</el-button>
+                            <el-button @click="onReset('form')">重置</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-tab-pane>
+            </el-tabs>
+        </el-main>
+        <el-footer>
+            <p>@{{year}} Ian</p>
+        </el-footer>
+    </el-container>
+</div>
+<script>
+    Vue.config.productionTip = false
+    new Vue({
+        el: "#app",
+        data: {
+            activeTab: 'one',
+            year: 2022,
+            loading: false,
+            businessTypes: [],// 业务类型初始数据
+
+            //*************票据披露信息文件下载**************
+            formData: {
+                // 业务类型
+                businessType: "",
+                // 披露时点
+                showMonth: ""
+            },
+            rules: {
+                businessType: [
+                    {required: true, message: '请选择业务类型', trigger: 'change'}
+                ],
+                showMonth: [
+                    {required: true, message: '请选择披露时点月份', trigger: 'change'}
+                ]
+            }
+        },
+        created: function () {
+            this.year = new Date().getFullYear()
+            this.init()
+        },
+        methods: {
+            // 页签切换事件函数
+            handleTabClick(tab, event) {
+            },
+            init() {
+                // 初始化业务类型列表
+                axios.post("/qs/getBusinessTypes").then(res => {
+                    const result = res.data
+                    if (result.code === 'S') {
+                        this.businessTypes = result.data
+                    } else {
+                        this.$message.error(result.message);
+                    }
+                }).catch(err => this.$message.error("请求处理失败" + err))
+            },
+
+            //*****************************START 模板下载*****************************
+            // 票据承兑人元数据模板下载
+            onDownloadMetaTemplate() {
+                this.loading = true
+                axios({
+                    method: 'post',
+                    url: '/qs/bill/disclosure/download/template',
+                    responseType: 'blob'
+                }).then(res => {
+                    this.loading = false
+                    download(res)
+                }).catch(err => {
+                    this.loading = false
+                    this.$message.error("请求处理失败" + err)
+                })
+            },
+            //*****************************END 模板下载*****************************
+
+            //*****************************START 文件上传*****************************
+            // 元数据文件上传
+            fileUpload() {
+                const busiType = document.getElementById("busiType").value;
+                if (!busiType) {
+                    this.$message.error("{元数据文件上传类型}不能为空！")
+                    return
+                }
+                const files = document.getElementById("excel-file").files
+                if (files.length === 0) {
+                    this.$message.error("上传的文件为空")
+                    return
+                }
+                const data = new FormData()
+                data.append("file", files[0])
+                data.append("busiType", busiType)
+                axios({
+                    method: 'post',
+                    url: '/qs/bill/disclosure/upload/meta/data',
+                    data: data,
+                    responseType: 'json'
+                }).then(resp => {
+                    this.$message(resp.data.message)
+                }).catch(error => this.$message.error(error))
+            },
+            //*****************************END 文件上传*****************************
+
+            //*****************************START 票据披露信息查询*****************************
+            //TODO
+            //*****************************END 票据披露信息查询*****************************
+
+            //*****************************START 票据披露信息文件下载*****************************
+            // 下载票据承兑人信用披露文件
+            onDownload(form) {
+                const _this = this
+                this.$refs[form].validate((valid) => {
+                    if (valid) {
+                        this.loading = true
+                        axios({
+                            method: 'post',
+                            url: '/qs/bill/disclosure/disclosure/web/download',
+                            data: {"showMonth": this.formData.showMonth, "busiType": _this.formData.businessType},
+                            responseType: 'blob'
+                        }).then(res => {
+                            if (res.headers["content-type"] === "application/json") {
+                                this.$message.error(res.data.message)
+                            } else {
+                                download(res)
+                            }
+                            this.loading = false
+                        }).catch(err => {
+                            this.loading = false
+                            this.$message.error("请求处理失败" + err)
+                        })
+                    }
+                });
+            },
+
+            // 重置
+            onReset(form) {
+                this.$refs[form].resetFields();
+            }
+            //*****************************END 票据披露信息文件下载*****************************
+        }
+    })
+</script>
+</body>
+</html>
