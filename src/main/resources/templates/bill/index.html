@@ -9,6 +9,7 @@
     <script th:src="@{/element-ui/lib/index.js}"></script>
     <script th:src="@{/js/axios.min.js}"></script>
     <script th:src="@{/js/excel.js}"></script>
+    <script th:src="@{/js/qs.js}"></script>
 </head>
 <body>
 <div id="app">
@@ -114,6 +115,7 @@
         created: function () {
             this.year = new Date().getFullYear()
             this.init()
+            this.formData.showMonth = getLastMonth()
         },
         methods: {
             // 页签切换事件函数
@@ -125,6 +127,7 @@
                     const result = res.data
                     if (result.code === 'S') {
                         this.businessTypes = result.data
+                        this.formData.businessType = this.businessTypes[0].value
                     } else {
                         this.$message.error(result.message);
                     }
