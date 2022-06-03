@@ -69,14 +69,14 @@ public class Ssh2Service {
             //如果为得到标准输出为空，说明脚本执行出错了
             if (ObjectsUtil.isNull(result)) {
                 result = processStdout(session.getStderr());
-                log.error("执行命令[{}]失败, error-{}", command, result);
+                log.error("执行命令[{}], 执行失败响应结果[{}]", command, result);
                 return ResultVO.failed("执行命令[" + command + "]失败, error[" + result + "]");
             } else {
-                log.info("执行命令[{}]成功, result-{}", command, result);
+                log.info("执行命令[{}], 执行成功响应结果[{}]", command, result);
                 return ResultVO.success("执行成功", result);
             }
         } catch (IOException e) {
-            log.error("执行命令失败,链接conn:{}, 执行的命令:{},error:{}", connection, command, e.getMessage());
+            log.error("执行命令失败, 链接Connection:{}, 执行的命令:{}, error:{}", connection, command, e.getMessage());
         } finally {
             try {
                 if (session != null) {

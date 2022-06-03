@@ -21,7 +21,7 @@ class QuickSandApplicationTests {
     @Test
     void contextLoads() {
         System.out.println(dataSource.getClass());
-        Map<String, Object> map = jdbcTemplate.queryForMap("select 1 from dual");
+        Map<String, Object> map = jdbcTemplate.queryForMap("select now() from dual");
         map.forEach((k, v) -> System.out.println(v));
     }
 
@@ -29,8 +29,8 @@ class QuickSandApplicationTests {
     private Ssh2Service ssh2Service;
     @Test
     public void testShh2() {
-        String command = "cd /soft/webJar;pwd";
-        log.info(ssh2Service.execute(command).toString());
+        String command = "pwd";
+        ssh2Service.execute(command);
     }
 
 }

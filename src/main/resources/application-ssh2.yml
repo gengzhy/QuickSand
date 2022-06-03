@@ -3,4 +3,4 @@ ssh2:
   remote:
     ip: 127.0.0.1
     username: root
-    password: root
+    password: 1234

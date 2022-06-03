@@ -4,7 +4,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://1.116.137.249:3306/qs?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=GMT%2B8
+      url: jdbc:mysql://127.0.0.1:3306/qs?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=GMT%2B8
       username: qs
       password: qs@520
       # 初始化时建立物理连接的个数

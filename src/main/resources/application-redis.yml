@@ -2,7 +2,7 @@
 spring:
   redis:
     database: 0
-    host: 1.116.137.249
+    host: 127.0.0.1
     password: gynshkjit21830
     port: 6388
     jedis:
