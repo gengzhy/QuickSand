@@ -27,7 +27,7 @@
         <springfox-swagger3.version>3.0.0</springfox-swagger3.version>
         <swagger-knife4j.version>3.0.3</swagger-knife4j.version>
         <mysql.version>8.0.29</mysql.version>
-        <druid.version>1.1.12</druid.version>
+        <druid.version>1.2.9</druid.version>
         <ganymed.version>262</ganymed.version>
     </properties>
     <dependencies>
