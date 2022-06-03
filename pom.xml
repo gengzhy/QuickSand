@@ -28,6 +28,7 @@
         <swagger-knife4j.version>3.0.3</swagger-knife4j.version>
         <mysql.version>8.0.29</mysql.version>
         <druid.version>1.1.12</druid.version>
+        <ganymed.version>262</ganymed.version>
     </properties>
     <dependencies>
         <dependency>
@@ -137,6 +138,15 @@
             <version>${druid.version}</version>
         </dependency>
         <!-- end 数据库驱动及引擎 -->
+
+        <!-- start ssh2工具 -->
+        <dependency>
+            <groupId>ch.ethz.ganymed</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>${ganymed.version}</version>
+        </dependency>
+        <!-- end ssh2工具 -->
+
 
         <!-- end thymeleaf模板引擎 --><!--<dependency>
             <groupId>org.mybatis.spring.boot</groupId>

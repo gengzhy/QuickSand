@@ -7,7 +7,7 @@ server:
 
 spring:
   profiles:
-    include: redis,datasource
+    include: redis,datasource,ssh2
   application:
     name: quick-sand
   mvc:

@@ -1,0 +1,6 @@
+#ssh2连接配置
+ssh2:
+  remote:
+    ip: 127.0.0.1
+    username: root
+    password: root
