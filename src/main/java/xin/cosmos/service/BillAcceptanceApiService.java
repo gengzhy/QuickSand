@@ -88,11 +88,18 @@ public class BillAcceptanceApiService {
     public String uploadBillAcceptanceMetaData(MultipartFile file, String busiType) {
         // 业务类型
         BillAcceptanceMetaType billAcceptanceMetaType = IDict.findByName(busiType, BillAcceptanceMetaType.class);
+        boolean can = redisService.get(Constant.CAN_UPLOAD_META_DATA);
+        String storeMetaKey = Constant.getMetaDataStoreKey(billAcceptanceMetaType.name());
+        String successDownloadFlag = Constant.getDownloadOklistIndexKey(billAcceptanceMetaType.name());
+        if (!can && redisService.exists(storeMetaKey) && redisService.exists(successDownloadFlag)) {
+            throw new BusinessException("[%s]的元数据已存在，且有正在处理中的票据承兑信用披露信息。为了数据的完整性，暂时禁用了上传功能，若要继续上传，请联系开启。",
+                    billAcceptanceMetaType.getDesc());
+        }
         List<BillAcceptanceMeta> metas = EasyExcelHelper.doReadExcelData(file.getInputStream(),
                 BillAcceptanceMeta.class, Comparator.comparing(BillAcceptanceMeta::getIndex));
-        redisService.setList(Constant.getMetaDataStoreKey(billAcceptanceMetaType.name()), metas);
+        redisService.setList(storeMetaKey, metas);
         // 导入新数据后，删除标记位
-        redisService.delete(Constant.getDownloadOklistIndexKey(billAcceptanceMetaType.name()));
+        redisService.delete(successDownloadFlag);
         metas.forEach(e -> log.info("{}-元数据==>{}", billAcceptanceMetaType.getDesc(), e));
         return "已成功导入" + metas.size() + "条" + billAcceptanceMetaType.getDesc() + "元数据";
     }

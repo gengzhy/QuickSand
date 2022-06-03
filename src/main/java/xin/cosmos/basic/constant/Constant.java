@@ -21,4 +21,9 @@ public interface Constant {
     static String getDownloadOklistIndexKey(String busiType) {
         return DOWNLOAD_OK_LIST_INDEX_PREFIX + busiType;
     }
+
+    /**
+     * 设置是否可以上传票据承兑人元数据
+     */
+    String CAN_UPLOAD_META_DATA = "canUploadMetaData";
 }

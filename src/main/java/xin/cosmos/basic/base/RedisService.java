@@ -1,6 +1,5 @@
 package xin.cosmos.basic.base;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -88,4 +87,26 @@ public class RedisService {
         this.expired(key, timeoutSeconds);
         return value;
     }
+
+    /**
+     * 是否过期
+     *
+     * @param key
+     * @return
+     */
+    public boolean isExpired(String key) {
+        Long r = Optional.ofNullable(redisTemplate.opsForValue().getOperations().getExpire(key)).orElse(0L);
+        return r > 0;
+    }
+
+    /**
+     * 判断某个key是否存在
+     *
+     * @param key
+     * @return
+     */
+    public boolean exists(String key) {
+        return Optional.ofNullable(redisTemplate.hasKey(key)).orElse(false);
+    }
+
 }

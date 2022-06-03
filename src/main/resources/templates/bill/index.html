@@ -19,7 +19,7 @@
         </el-header>
         <el-main>
             <el-tabs v-model="activeTab" type="border-card" @tab-click="handleTabClick" tab-position="left">
-                <el-tab-pane label="元数据导入模板" name="zero"
+                <el-tab-pane label="元数据导入模板" name="0"
                              v-loading="loading"
                              element-loading-text="正在下载元数据模板..."
                              element-loading-spinner="el-icon-loading">
@@ -29,7 +29,7 @@
                     </el-row>
                 </el-tab-pane>
 
-                <el-tab-pane label="票据承兑信用信息元数据上传" name="one"
+                <el-tab-pane label="票据承兑信用信息元数据上传" name="1"
                              v-loading="loading"
                              element-loading-text="正在导入数据..."
                              element-loading-spinner="el-icon-loading">
@@ -51,12 +51,12 @@
                     </el-form>
                 </el-tab-pane>
 
-                <!--<el-tab-pane label="票据承兑信用信息披露信息查询" name="two">
+                <!--<el-tab-pane label="票据承兑信用信息披露信息查询" name="2">
                     （功能开发中...）
 
                 </el-tab-pane>-->
 
-                <el-tab-pane label="票据承兑信用信息披露文件下载" name="three"
+                <el-tab-pane label="票据承兑信用信息披露文件下载" name="3"
                              v-loading="loading"
                              element-loading-text="正在下载信用披露数据..."
                              element-loading-spinner="el-icon-loading">
@@ -91,7 +91,7 @@
     new Vue({
         el: "#app",
         data: {
-            activeTab: 'one',
+            activeTab: '3',
             year: 2022,
             loading: false,
             businessTypes: [],// 业务类型初始数据
@@ -155,27 +155,44 @@
             //*****************************START 文件上传*****************************
             // 元数据文件上传
             fileUpload() {
-                const busiType = document.getElementById("busiType").value;
-                if (!busiType) {
-                    this.$message.error("{元数据文件上传类型}不能为空！")
-                    return
-                }
-                const files = document.getElementById("excel-file").files
-                if (files.length === 0) {
-                    this.$message.error("上传的文件为空")
-                    return
-                }
-                const data = new FormData()
-                data.append("file", files[0])
-                data.append("busiType", busiType)
-                axios({
-                    method: 'post',
-                    url: '/qs/bill/disclosure/upload/meta/data',
-                    data: data,
-                    responseType: 'json'
-                }).then(resp => {
-                    this.$message(resp.data.message)
-                }).catch(error => this.$message.error(error))
+                const _this = this
+                this.$confirm('此操作将会覆盖原来的全部元数据，并且会清除对应的票据承兑人信用露露信息成功下载的元数据标记位, 请谨慎操作，是否继续?', '警告', {
+                    confirmButtonText: '继续上传',
+                    cancelButtonText: '取消上传',
+                    type: 'warning'
+                }).then(() => {
+                    const busiType = document.getElementById("busiType").value;
+                    if (!busiType) {
+                        _this.$message.error("{元数据文件上传类型}不能为空！")
+                        return
+                    }
+                    const files = document.getElementById("excel-file").files
+                    if (files.length === 0) {
+                        _this.$message.error("上传的文件为空")
+                        return
+                    }
+                    _this.loading = true
+                    const data = new FormData()
+                    data.append("file", files[0])
+                    data.append("busiType", busiType)
+                    axios({
+                        method: 'post',
+                        url: '/qs/bill/disclosure/upload/meta/data',
+                        data: data,
+                        responseType: 'json'
+                    }).then(resp => {
+                        _this.loading = false
+                        _this.$message(resp.data.message)
+                    }).catch(error => {
+                        _this.loadin = false
+                        _this.$message.error(error)
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消上传'
+                    });
+                });
             },
             //*****************************END 文件上传*****************************
 
