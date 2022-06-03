@@ -88,7 +88,7 @@ public class BillAcceptanceApiService {
     public String uploadBillAcceptanceMetaData(MultipartFile file, String busiType) {
         // 业务类型
         BillAcceptanceMetaType billAcceptanceMetaType = IDict.findByName(busiType, BillAcceptanceMetaType.class);
-        boolean can = redisService.get(Constant.CAN_UPLOAD_META_DATA);
+        boolean can = Optional.ofNullable((Boolean)redisService.get(Constant.CAN_UPLOAD_META_DATA)).orElse(true);
         String storeMetaKey = Constant.getMetaDataStoreKey(billAcceptanceMetaType.name());
         String successDownloadFlag = Constant.getDownloadOklistIndexKey(billAcceptanceMetaType.name());
         if (!can && redisService.exists(storeMetaKey) && redisService.exists(successDownloadFlag)) {

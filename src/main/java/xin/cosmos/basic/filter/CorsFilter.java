@@ -34,6 +34,8 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Allow-Headers", "x-auth-token,Origin,Access-Token,X-Requested-With,Content-Type, Accept,multipart/form-data,Authorization");
         //是否允许浏览器携带用户身份信息（cookie）
         response.setHeader("Access-Control-Allow-Credentials", "true");
+        // localhost->localhost的跨域请求
+        response.setHeader("Access-Control-Allow-Private-Network", "true");
         chain.doFilter(req, res);
     }
 }
