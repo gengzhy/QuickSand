@@ -24,7 +24,7 @@ spring:
 
 # 日志配置
 logging:
-  config: classpath:logback-spring-dev.xml
+  config: classpath:logback-spring.xml
   file:
     name: qs-server
     path: ./logs
