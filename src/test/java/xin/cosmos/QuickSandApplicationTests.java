@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import xin.cosmos.basic.base.RedisService;
 import xin.cosmos.basic.ssh2.Ssh2Service;
 
 import javax.sql.DataSource;
@@ -31,6 +32,13 @@ class QuickSandApplicationTests {
     public void testShh2() {
         String command = "pwd";
         ssh2Service.execute(command);
+    }
+
+    @Autowired
+    private RedisService redisService;
+    @Test
+    public void testBackUp() {
+        redisService.syncSave();
     }
 
 }

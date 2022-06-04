@@ -1,7 +1,12 @@
 package xin.cosmos.basic.base;
 
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.time.Duration;
 import java.util.*;
@@ -109,4 +114,67 @@ public class RedisService {
         return Optional.ofNullable(redisTemplate.hasKey(key)).orElse(false);
     }
 
+    /**
+     * 执行Redis Lua脚本
+     *
+     * e.g:
+     * luaScript ==>  redis.call('set',KEYS[1],ARGV[1])
+     *
+     * @param luaScript Lua脚本
+     * @param key 键
+     * @param args 参数
+     */
+    public Object execute(String luaScript, String key, Object... args) {
+        return redisTemplate.execute(RedisScript.of(luaScript), Collections.singletonList(key), args);
+    }
+
+    /**
+     * 执行Redis Lua脚本
+     * @param luaScript Lua脚本
+     * @param key 键
+     */
+    public Object execute(String luaScript, String key) {
+        return redisTemplate.execute(RedisScript.of(luaScript), Collections.singletonList(key));
+    }
+
+    /**
+     * 获取Reds信息
+     */
+    public Map<Object,Object> getRedisInfo() {
+        return getConnection().info();
+    }
+
+    /**
+     * 备份Redis数据
+     */
+    public void doSave() {
+        getConnection().save();
+    }
+
+    /**
+     * 备份Redis数据(异步)
+     */
+    public void syncSave() {
+        getConnection().bgSave();
+    }
+
+    /**
+     * 清除当前数据库的所有数据
+     */
+    public void deleteCurrentDb() {
+        getConnection().flushDb();
+    }
+
+    /**
+     * 清除当前数据库的所有数据
+     */
+    public void deleteAllDb() {
+        getConnection().flushAll();
+    }
+
+    private RedisConnection getConnection() {
+        RedisConnectionFactory factory = redisTemplate.getConnectionFactory();
+        Assert.notNull(factory, "获取Redis连接失败");
+        return RedisConnectionUtils.getConnection(factory);
+    }
 }
