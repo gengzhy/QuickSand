@@ -2,20 +2,20 @@ package xin.cosmos.basic.httpclient;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import xin.cosmos.basic.exception.PlatformException;
 import xin.cosmos.basic.util.ObjectsUtil;
 
 import java.io.IOException;
@@ -35,7 +35,23 @@ class HttpClientTool {
     private CloseableHttpClient httpClient;
     public String charset = "UTF-8";
 
+    /**
+     * 代理主机
+     */
+    private HttpHost proxyHost;
+
     private HttpClientTool() {
+    }
+
+    /**
+     * 设置代理主机
+     *
+     * @param proxyHost 代理主机
+     * @return
+     */
+    protected HttpClientTool proxyHost(HttpHost proxyHost) {
+        this.proxyHost = proxyHost;
+        return this;
     }
 
     protected static HttpClientTool create(CloseableHttpClient httpClient, String charset) {
@@ -77,6 +93,10 @@ class HttpClientTool {
             // 设置请求头参数
             ObjectsUtil.nonNullTodo(headers, () -> headers.forEach(httpGet::setHeader));
             logInfo(httpGet, url, params);
+
+            // 设置代理
+            this.setPoxy(httpGet);
+
             CloseableHttpResponse response = httpClient.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
             String reasonPhrase = response.getStatusLine().getReasonPhrase();
@@ -134,6 +154,9 @@ class HttpClientTool {
         logInfo(httpPost, url, params);
         CloseableHttpResponse response = null;
         try {
+            // 设置代理
+            this.setPoxy(httpPost);
+
             response = httpClient.execute(httpPost);
             int statusCode = response.getStatusLine().getStatusCode();
             String reasonPhrase = response.getStatusLine().getReasonPhrase();
@@ -222,5 +245,19 @@ class HttpClientTool {
         log.info("║—————响应结果:");
         log.info("║{}", result);
         log.info("╚═════════════════════════════════════════════════════════");
+    }
+
+    /**
+     * 设置代理
+     *
+     * @param httpRequestBase
+     */
+    private void setPoxy(HttpRequestBase httpRequestBase) {
+        // 代理地址或代理端口为空则不进行代理
+        if (ObjectsUtil.isNull(this.proxyHost) || ObjectsUtil.isNull(this.proxyHost.getHostName()) || this.proxyHost.getPort() <= 0) {
+            return;
+        }
+        RequestConfig build = RequestConfig.custom().setProxy(proxyHost).build();
+        httpRequestBase.setConfig(build);
     }
 }

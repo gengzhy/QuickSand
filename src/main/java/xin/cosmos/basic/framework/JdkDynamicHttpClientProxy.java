@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import lombok.extern.slf4j.Slf4j;
+import xin.cosmos.basic.config.props.ProxyProperties;
 import xin.cosmos.basic.exception.PlatformException;
 import xin.cosmos.basic.framework.annotation.ApiService;
 import xin.cosmos.basic.framework.annotation.ApiSupport;
-import xin.cosmos.basic.httpclient.HttpClient;
 import xin.cosmos.basic.framework.header.DynamicHeaders;
+import xin.cosmos.basic.helper.ContextHolder;
+import xin.cosmos.basic.httpclient.HttpClient;
 import xin.cosmos.basic.util.ObjectsUtil;
 
 import java.lang.reflect.InvocationHandler;
@@ -75,6 +77,13 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
         Map<String, Object> params = objectToJsonMap(args);
         String result;
         HttpClient httpClient = HttpClient.create();
+
+        // 设置代理
+        ProxyProperties proxyProperties = ContextHolder.getBean(ProxyProperties.class);
+        if (proxyProperties.isEnable() && !ObjectsUtil.isNull(proxyProperties.getHost()) && !ObjectsUtil.isNull(proxyProperties.getPort())) {
+            httpClient.proxyHost(proxyProperties.getHost()).proxyPort(proxyProperties.getPort());
+        }
+
         Map<String, String> headers = null;
         if (!apiService.headers().equals(DynamicHeaders.NONE)) {
             headers = apiService.headers().getHeaders();

@@ -48,7 +48,7 @@ public class BillAcceptanceApiService {
     @Autowired
     private RedisService redisService;
 
-    @Value("sub-bill-acceptance-left-brackets:false")
+    @Value("${cust.sub-bill-acceptance-left-brackets:false}")
     private String isSubstrLeftBracket;
 
     /**
