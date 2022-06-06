@@ -2,16 +2,17 @@ package xin.cosmos.basic.framework;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import lombok.extern.slf4j.Slf4j;
 import xin.cosmos.basic.exception.PlatformException;
 import xin.cosmos.basic.framework.annotation.ApiService;
 import xin.cosmos.basic.framework.annotation.ApiSupport;
 import xin.cosmos.basic.httpclient.HttpClient;
+import xin.cosmos.basic.framework.header.DynamicHeaders;
 import xin.cosmos.basic.util.ObjectsUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -70,17 +71,19 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
 
         // 请求地址
         String fullUrl = handleUrl(apiSupport, apiService);
-        log.info("请求服务接口-[{}],请求参数值-[{}] - 请求接口地址[{}]", method.getName(), Arrays.toString(args), fullUrl);
-
         // 格式化请求参数
         Map<String, Object> params = objectToJsonMap(args);
         String result;
-        if (ApiService.RequestMethod.GET.equals(apiService.method())) {
-            result = HttpClient.create().get(fullUrl, null, params);
-        } else {
-            result = HttpClient.create().post(fullUrl, null, params);
+        HttpClient httpClient = HttpClient.create();
+        Map<String, String> headers = null;
+        if (!apiService.headers().equals(DynamicHeaders.NONE)) {
+            headers = apiService.headers().getHeaders();
         }
-        log.info("接口[{}]响应结果 - {}", fullUrl, result);
+        if (ApiService.RequestMethod.GET.equals(apiService.method())) {
+            result = httpClient.get(fullUrl, headers, params);
+        } else {
+            result = httpClient.post(fullUrl, headers, params);
+        }
 
         // 反序列化响应结果
         if (String.class.equals(method.getReturnType())) {
@@ -130,8 +133,9 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
         if (ObjectsUtil.isNull(params)) {
             return paramMap;
         }
-        Object param = params[0];
-        JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(param));
+        String jsonString = JSON.toJSONString(params[0]);
+        // 使用 Feature.OrderedField指定，保持序列化的JSON字符串中的顺序
+        JSONObject jsonObject = JSON.parseObject(jsonString, Feature.OrderedField);
         paramMap.putAll(jsonObject);
         return paramMap;
     }

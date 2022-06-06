@@ -1,8 +1,8 @@
 package xin.cosmos.basic.httpclient;
 
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -10,10 +10,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import xin.cosmos.basic.util.ObjectsUtil;
@@ -21,6 +21,7 @@ import xin.cosmos.basic.util.ObjectsUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -44,19 +45,6 @@ class HttpClientTool {
             clientTool.charset = charset;
         }
         return clientTool;
-    }
-
-    /**
-     * 设置请求头，若请求头name相同，则会被覆盖
-     *
-     * @param httpRequestBase
-     * @param headers
-     */
-    protected void setHeaders(HttpRequestBase httpRequestBase, Map<String, String> headers) {
-        if (headers == null || headers.isEmpty()) {
-            return;
-        }
-        headers.forEach(httpRequestBase::setHeader);
     }
 
     /**
@@ -88,7 +76,7 @@ class HttpClientTool {
             HttpGet httpGet = new HttpGet(url);
             // 设置请求头参数
             ObjectsUtil.nonNullTodo(headers, () -> headers.forEach(httpGet::setHeader));
-
+            logInfo(httpGet, url, params);
             CloseableHttpResponse response = httpClient.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
             String reasonPhrase = response.getStatusLine().getReasonPhrase();
@@ -104,9 +92,10 @@ class HttpClientTool {
             }
             EntityUtils.consume(entity);
             response.close();
+            logResult(result);
             return result;
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("Httpclient 与第三方通信异常", e);
             throw new RuntimeException("与第三方通信异常:" + e.getMessage());
         }
     }
@@ -142,6 +131,7 @@ class HttpClientTool {
 
         httpPost.setHeader("Content-Type", ContentType.TEXT_PLAIN.withCharset(StandardCharsets.UTF_8).getMimeType());
         httpPost.setEntity(new StringEntity(params.toString(), StandardCharsets.UTF_8));
+        logInfo(httpPost, url, params);
         CloseableHttpResponse response = null;
         try {
             response = httpClient.execute(httpPost);
@@ -158,6 +148,7 @@ class HttpClientTool {
                 result = EntityUtils.toString(entity, this.charset);
             }
             EntityUtils.consume(entity);
+            logResult(result);
             return result;
         } catch (Exception e) {
             log.error("Httpclient 与第三方通信异常", e);
@@ -193,9 +184,43 @@ class HttpClientTool {
         return pairs;
     }
 
-    private String objToJson(Object obj) {
-        String jsonString = JSON.toJSONString(obj);
-        return jsonString;
+    /**
+     * 打印接口请求日志信息
+     *
+     * @param httpMessage
+     * @param url
+     * @param params
+     */
+    private void logInfo(AbstractHttpMessage httpMessage, String url, Object params) {
+        if (!log.isInfoEnabled()) {
+            return;
+        }
+        log.info("╔═════════════════════════════════════════════════════════");
+        log.info("║—————请求URL:");
+        log.info("║{}", url);
+        log.info("║—————请求头:");
+        Header[] headers = httpMessage.getAllHeaders();
+        Arrays.stream(headers).forEach(header -> log.info("║{} => {}", header.getName(), header.getValue()));
+        log.info("║—————请求参数:");
+        if (params instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) params;
+            map.forEach((k, v) -> log.info("║{} => {}", k, v));
+        } else {
+            log.info("║{}", params.toString());
+        }
     }
 
+    /**
+     * 打印响应结果
+     *
+     * @param result
+     */
+    private void logResult(String result) {
+        if (!log.isInfoEnabled()) {
+            return;
+        }
+        log.info("║—————响应结果:");
+        log.info("║{}", result);
+        log.info("╚═════════════════════════════════════════════════════════");
+    }
 }

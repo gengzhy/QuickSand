@@ -1,6 +1,7 @@
 package xin.cosmos.basic.framework.annotation;
 
 import xin.cosmos.basic.framework.enums.ApiSubUrl;
+import xin.cosmos.basic.framework.header.DynamicHeaders;
 
 import java.lang.annotation.*;
 
@@ -29,6 +30,13 @@ public @interface ApiService {
      * @return
      */
     RequestMethod method() default RequestMethod.GET;
+
+    /**
+     * 请求头
+     *
+     * @return
+     */
+    DynamicHeaders headers() default DynamicHeaders.NONE;
 
 
     /**

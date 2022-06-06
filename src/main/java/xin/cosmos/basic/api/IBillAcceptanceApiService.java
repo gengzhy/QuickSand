@@ -8,6 +8,7 @@ import xin.cosmos.basic.framework.annotation.ApiService;
 import xin.cosmos.basic.framework.annotation.ApiSupport;
 import xin.cosmos.basic.framework.enums.ApiRootUrl;
 import xin.cosmos.basic.framework.enums.ApiSubUrl;
+import xin.cosmos.basic.framework.header.DynamicHeaders;
 
 /**
  * 票据承兑人信息接口服务类
@@ -24,7 +25,7 @@ public interface IBillAcceptanceApiService {
      * @param param 请求参数
      * @return
      */
-    @ApiService(ApiSubUrl.SHCPE_DISCLOSURE_FINDACCEPTNAME)
+    @ApiService(value = ApiSubUrl.SHCPE_DISCLOSURE_FINDACCEPTNAME, headers = DynamicHeaders.SHCPE_DISCLOSURE)
     AccInfoListByAcptNameVO findAccInfoListByAcptName(AccInfoListByAcptNameParam param);
 
     /**
@@ -33,6 +34,6 @@ public interface IBillAcceptanceApiService {
      * @param param 请求参数
      * @return
      */
-    @ApiService(ApiSubUrl.SHCPE_DISCLOSURE_FINDSETTLEPAGE)
+    @ApiService(value = ApiSubUrl.SHCPE_DISCLOSURE_FINDSETTLEPAGE, headers = DynamicHeaders.SHCPE_DISCLOSURE)
     FindSettlePageVO findSettlePage(FindSettlePageParam param);
 }

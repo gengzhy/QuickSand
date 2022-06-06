@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * httpclient 工具
@@ -24,8 +23,6 @@ public class HttpClient {
      */
     private final int timeout = 60000;
 
-    private final static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.7 Safari/537.36 Edg/101.0.1210.39";
-
     /**
      * 请求头-仿照浏览器发送请求
      */
@@ -34,18 +31,6 @@ public class HttpClient {
     public HttpClient userAgent(String userAgent) {
         this.userAgent = userAgent;
         return this;
-    }
-
-    /**
-     * 默认请求头参数
-     * 仅包含User-Agent.如果没有初始化，则采用默认的userAgent
-     *
-     * @return
-     */
-    private Map<String, String> userAgent() {
-        Map<String, String> headers = new LinkedHashMap<>();
-        headers.put("User-Agent", Optional.ofNullable(this.userAgent).orElse(DEFAULT_USER_AGENT));
-        return headers;
     }
 
     private HttpClient() {
@@ -80,7 +65,6 @@ public class HttpClient {
      */
     public String post(String url, Map<String, String> headers, Object params) {
         CloseableHttpClient chc = this.initHttpClientCustBuild(url).timeout(timeout).build();
-        headers = Optional.ofNullable(headers).orElse(this.userAgent());
         return HttpClientTool.create(chc, charset).doPost(url, headers, params);
     }
 
@@ -106,7 +90,6 @@ public class HttpClient {
     public String get(String url, Map<String, String> headers, Object params) {
         HttpClientCustBuild httpClientCustBuild = this.initHttpClientCustBuild(url);
         CloseableHttpClient chc = httpClientCustBuild.timeout(timeout).build();
-        headers = Optional.ofNullable(headers).orElse(this.userAgent());
         Map<String, Object> map = objectToMap(params);
         return HttpClientTool.create(chc, charset).doGet(url, headers, map);
     }
