@@ -5,8 +5,9 @@ spring:
     host: 127.0.0.1
     password: redis6380
     port: 6380
-    jedis:
+    lettuce:
       pool:
         max-active: 1000
         max-idle: 100
-        max-wait: 1000
+        max-wait: -1
+      shutdown-timeout: 300000  #超时关闭时间，建议不小于redis配置的tcp keepalive(默认300秒)
