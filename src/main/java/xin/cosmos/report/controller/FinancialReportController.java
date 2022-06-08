@@ -9,7 +9,7 @@ import xin.cosmos.report.service.FinancialReportService;
 
 @Api(tags = "金融报表-Controller")
 @Controller
-@RequestMapping(value = "fa")
+@RequestMapping(value = "report")
 public class FinancialReportController {
     @Autowired
     private FinancialReportService financialReportService;
