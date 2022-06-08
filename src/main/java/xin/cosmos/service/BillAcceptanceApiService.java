@@ -145,7 +145,9 @@ public class BillAcceptanceApiService {
         corpEntities.sort(Comparator.comparing(BillAcceptanceMeta::getIndex));
         // 异常断点数据处理
         final List<BillAcceptanceMeta> finalNewDataSource = new LinkedList<>();
-        Integer handleOkIndex = Optional.ofNullable((Integer) redisService.get(handleSuccessDownloadIndex)).orElse(0);
+        int handleOkIndex = Optional.ofNullable((Integer) redisService.get(handleSuccessDownloadIndex)).orElse(0);
+        // 数据处理的初始位置
+        int initialIndex = handleOkIndex;
         if (handleOkIndex == 0) {
             finalNewDataSource.addAll(corpEntities);
         } else {
@@ -180,8 +182,12 @@ public class BillAcceptanceApiService {
                 }
                 ++handleOkIndex;
             } catch (Exception e) {
+                // 没有处理成功的任何一条数据时，不缓存处理成功的标记位，直接抛出异常
+                if (initialIndex == handleOkIndex) {
+                    throw e;
+                }
                 redisService.set(handleSuccessDownloadIndex, handleOkIndex);
-                log.error("处理到第几【{}】条数据【{}】，接口处理失败：{}", handleOkIndex, currentHandleCorp, e.getMessage());
+                log.error("处理到第几【{}】条数据【{}】，接口处理失败：{}", handleOkIndex, currentHandleCorp, e);
                 isFullOk = false;
                 break;
             }
