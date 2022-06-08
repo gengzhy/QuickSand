@@ -1,9 +1,9 @@
-package xin.cosmos.entity;
+package xin.cosmos.disclosure.param;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceMetaType;
+import xin.cosmos.disclosure.dict.BillAcceptanceMetaType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

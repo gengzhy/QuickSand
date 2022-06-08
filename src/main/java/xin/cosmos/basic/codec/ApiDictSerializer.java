@@ -3,7 +3,7 @@ package xin.cosmos.basic.codec;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
 import lombok.SneakyThrows;
-import xin.cosmos.basic.api.dict.ApiDict;
+import xin.cosmos.basic.dict.ApiDict;
 
 import java.lang.reflect.Type;
 

@@ -6,7 +6,7 @@ import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
 import lombok.SneakyThrows;
-import xin.cosmos.basic.api.dict.ApiDict;
+import xin.cosmos.basic.dict.ApiDict;
 import xin.cosmos.basic.exception.PlatformException;
 
 import java.lang.reflect.Type;

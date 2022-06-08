@@ -1,4 +1,4 @@
-package xin.cosmos.basic.dict.bill.disclosure;
+package xin.cosmos.disclosure.dict;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

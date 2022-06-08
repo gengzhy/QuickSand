@@ -1,4 +1,4 @@
-package xin.cosmos.controller;
+package xin.cosmos.disclosure.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -7,17 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import xin.cosmos.basic.api.param.FindSettlePageParam;
-import xin.cosmos.basic.api.vo.AccInfoListByAcptNameVO;
-import xin.cosmos.basic.api.vo.FindSettlePageVO;
 import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.define.SingleParam;
-import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceMetaType;
 import xin.cosmos.basic.easyexcel.helper.EasyExcelHelper;
-import xin.cosmos.dto.BillAcceptanceDisclosureDataExcelDownloadDTO;
-import xin.cosmos.dto.BillAcceptanceMeta;
-import xin.cosmos.entity.BillAcceptanceExcelDownloadParam;
-import xin.cosmos.service.BillAcceptanceApiService;
+import xin.cosmos.disclosure.api.param.FindSettlePageParam;
+import xin.cosmos.disclosure.api.vo.AccInfoListByAcptNameVO;
+import xin.cosmos.disclosure.api.vo.FindSettlePageVO;
+import xin.cosmos.disclosure.dict.BillAcceptanceMetaType;
+import xin.cosmos.disclosure.entity.ExcelDownloadDTO;
+import xin.cosmos.disclosure.entity.MetaData;
+import xin.cosmos.disclosure.param.BillAcceptanceExcelDownloadParam;
+import xin.cosmos.disclosure.service.BillAcceptanceApiService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -45,7 +45,7 @@ public class BillAcceptanceController {
     public ResultVO<List<Map<String, String>>> getBusinessTypes() {
         List<Map<String, String>> businessTypes = new ArrayList<>();
         for (BillAcceptanceMetaType type : BillAcceptanceMetaType.values()) {
-            businessTypes.add(new HashMap() {{
+            businessTypes.add(new HashMap<String, String>() {{
                 put("name", type.getDesc());
                 put("value", type.name());
             }});
@@ -80,10 +80,10 @@ public class BillAcceptanceController {
     @ResponseBody
     @PostMapping("/disclosure/web/download")
     public void downloadPostBatchBillAcceptanceDisclosureDataExcelFile(@Valid @RequestBody BillAcceptanceExcelDownloadParam param, HttpServletResponse response) {
-        List<BillAcceptanceDisclosureDataExcelDownloadDTO> data = billAcceptanceApiService.queryBatchBillAcceptanceDisclosureData(param);
+        List<ExcelDownloadDTO> data = billAcceptanceApiService.queryBatchBillAcceptanceDisclosureData(param);
         String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssS"));
         String fileName = param.getBusiType().getDesc() + "[" + param.getShowMonth() + "]票据承兑信用信息披露查询数据" + ts;
-        EasyExcelHelper.downloadExcelToResponse(response, fileName, data, BillAcceptanceDisclosureDataExcelDownloadDTO.class);
+        EasyExcelHelper.downloadExcelToResponse(response, fileName, data, ExcelDownloadDTO.class);
     }
 
     @ApiOperation(value = "票据承兑人元数据Excel模板下载", produces = "application/octet-stream")
@@ -92,7 +92,7 @@ public class BillAcceptanceController {
     public void downloadExcelFile(HttpServletResponse response) {
         String fileName = "票据承兑人元数据模板v" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssS"));
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("template/bill_source_data_template.xlsx");
-        List<BillAcceptanceMeta> data = EasyExcelHelper.doReadExcelData(inputStream, BillAcceptanceMeta.class);
-        EasyExcelHelper.downloadExcelToResponse(response, fileName, data, BillAcceptanceMeta.class);
+        List<MetaData> data = EasyExcelHelper.doReadExcelData(inputStream, MetaData.class);
+        EasyExcelHelper.downloadExcelToResponse(response, fileName, data, MetaData.class);
     }
 }

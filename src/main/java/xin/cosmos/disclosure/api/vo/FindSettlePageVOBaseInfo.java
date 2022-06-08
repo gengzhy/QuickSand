@@ -1,11 +1,11 @@
-package xin.cosmos.basic.api.vo;
+package xin.cosmos.disclosure.api.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import xin.cosmos.basic.api.dict.bill.disclosure.OrgType;
 import xin.cosmos.basic.codec.ApiDictDeserializer;
+import xin.cosmos.disclosure.api.dict.OrgType;
 
 @ApiModel(description = "票据承兑信用信息披露记录 - 披露主体基本信息")
 @Data

@@ -1,4 +1,4 @@
-package xin.cosmos.basic.api.param;
+package xin.cosmos.disclosure.api.param;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModel;

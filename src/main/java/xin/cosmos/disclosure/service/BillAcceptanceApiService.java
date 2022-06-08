@@ -1,4 +1,4 @@
-package xin.cosmos.service;
+package xin.cosmos.disclosure.service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -8,23 +8,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
-import xin.cosmos.basic.api.IBillAcceptanceApiService;
-import xin.cosmos.basic.api.dict.bill.disclosure.ShowStatus;
-import xin.cosmos.basic.api.param.AccInfoListByAcptNameParam;
-import xin.cosmos.basic.api.param.FindSettlePageParam;
-import xin.cosmos.basic.api.vo.*;
 import xin.cosmos.basic.base.RedisService;
 import xin.cosmos.basic.constant.Constant;
 import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.define.SingleParam;
 import xin.cosmos.basic.dict.IDict;
-import xin.cosmos.basic.dict.bill.disclosure.BillAcceptanceMetaType;
 import xin.cosmos.basic.easyexcel.helper.EasyExcelHelper;
 import xin.cosmos.basic.exception.BusinessException;
 import xin.cosmos.basic.util.ObjectsUtil;
-import xin.cosmos.dto.BillAcceptanceDisclosureDataExcelDownloadDTO;
-import xin.cosmos.dto.BillAcceptanceMeta;
-import xin.cosmos.entity.BillAcceptanceExcelDownloadParam;
+import xin.cosmos.disclosure.api.service.IBillAcceptanceApiService;
+import xin.cosmos.disclosure.api.dict.ShowStatus;
+import xin.cosmos.disclosure.api.param.AccInfoListByAcptNameParam;
+import xin.cosmos.disclosure.api.param.FindSettlePageParam;
+import xin.cosmos.disclosure.api.vo.*;
+import xin.cosmos.disclosure.dict.BillAcceptanceMetaType;
+import xin.cosmos.disclosure.entity.ExcelDownloadDTO;
+import xin.cosmos.disclosure.entity.MetaData;
+import xin.cosmos.disclosure.param.BillAcceptanceExcelDownloadParam;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -95,8 +95,8 @@ public class BillAcceptanceApiService {
             throw new BusinessException("[%s]的元数据已存在，且有正在处理中的票据承兑信用披露信息。为了数据的完整性，暂时禁用了上传功能，若要继续上传，请联系开启。",
                     billAcceptanceMetaType.getDesc());
         }
-        List<BillAcceptanceMeta> metas = EasyExcelHelper.doReadExcelData(file.getInputStream(),
-                BillAcceptanceMeta.class, Comparator.comparing(BillAcceptanceMeta::getIndex));
+        List<MetaData> metas = EasyExcelHelper.doReadExcelData(file.getInputStream(),
+                MetaData.class, Comparator.comparing(MetaData::getIndex));
         redisService.setList(storeMetaKey, metas);
         // 导入新数据后，删除标记位
         redisService.delete(successDownloadFlag);
@@ -111,7 +111,7 @@ public class BillAcceptanceApiService {
      * 当全部爬取成功后，会删除缓存中爬取失败的标志
      *
      */
-    public List<BillAcceptanceDisclosureDataExcelDownloadDTO> queryBatchBillAcceptanceDisclosureData(BillAcceptanceExcelDownloadParam param) {
+    public List<ExcelDownloadDTO> queryBatchBillAcceptanceDisclosureData(BillAcceptanceExcelDownloadParam param) {
         if (StringUtils.isEmpty(param.getShowMonth())) {
             throw new BusinessException("披露信息时点日期不能为空");
         }
@@ -122,9 +122,9 @@ public class BillAcceptanceApiService {
         }
         String showMonth = (param.getShowMonth().length() > 7) ? param.getShowMonth().substring(0, 7) : param.getShowMonth();
         final AtomicInteger index = new AtomicInteger(0);
-        List<BillAcceptanceMeta> corpEntities = redisService.getList(Constant.getMetaDataStoreKey(acceptanceBusiType.name()));
+        List<MetaData> corpEntities = redisService.getList(Constant.getMetaDataStoreKey(acceptanceBusiType.name()));
         Assert.notEmpty(corpEntities, "请先上传票据承兑人源数据后再进行下载");
-        final List<BillAcceptanceDisclosureDataExcelDownloadDTO> data = new LinkedList<>();
+        final List<ExcelDownloadDTO> data = new LinkedList<>();
 
         // 企业名称模糊查询处理
         if (Boolean.parseBoolean(isSubstrLeftBracket)) {
@@ -142,9 +142,9 @@ public class BillAcceptanceApiService {
         String handleSuccessDownloadIndex = Constant.getDownloadOklistIndexKey(acceptanceBusiType.name());
 
         // 升序排序
-        corpEntities.sort(Comparator.comparing(BillAcceptanceMeta::getIndex));
+        corpEntities.sort(Comparator.comparing(MetaData::getIndex));
         // 异常断点数据处理
-        final List<BillAcceptanceMeta> finalNewDataSource = new LinkedList<>();
+        final List<MetaData> finalNewDataSource = new LinkedList<>();
         int handleOkIndex = Optional.ofNullable((Integer) redisService.get(handleSuccessDownloadIndex)).orElse(0);
         // 数据处理的初始位置
         int initialIndex = handleOkIndex;
@@ -161,7 +161,7 @@ public class BillAcceptanceApiService {
         String currentHandleCorp;
         AccInfoListByAcptNameParam acptNameParam;
         FindSettlePageParam settlePageParam;
-        for (BillAcceptanceMeta corpEntity : finalNewDataSource) {
+        for (MetaData corpEntity : finalNewDataSource) {
             currentHandleCorp = corpEntity.getCorpName();
             // 处理数据，捕获异常，防止成功的数据丢失
             try {
@@ -182,12 +182,12 @@ public class BillAcceptanceApiService {
                 }
                 ++handleOkIndex;
             } catch (Exception e) {
+                log.error("正在处理第[{}]条数据[{}]，接口处处理失败", handleOkIndex, currentHandleCorp, e);
                 // 没有处理成功的任何一条数据时，不缓存处理成功的标记位，直接抛出异常
                 if (initialIndex == handleOkIndex) {
                     throw e;
                 }
                 redisService.set(handleSuccessDownloadIndex, handleOkIndex);
-                log.error("处理到第几【{}】条数据【{}】，接口处理失败：{}", handleOkIndex, currentHandleCorp, e);
                 isFullOk = false;
                 break;
             }
@@ -208,7 +208,7 @@ public class BillAcceptanceApiService {
      * @param index
      * @param showMonth
      */
-    private void wrapper(FindSettlePageVO settlePageVO, List<BillAcceptanceDisclosureDataExcelDownloadDTO> data, AtomicInteger index, String showMonth) {
+    private void wrapper(FindSettlePageVO settlePageVO, List<ExcelDownloadDTO> data, AtomicInteger index, String showMonth) {
         if (settlePageVO == null) {
             return;
         }
@@ -218,9 +218,9 @@ public class BillAcceptanceApiService {
         }
         FindSettlePageVOBaseInfo baseInfo = body.getBaseInfo();
         List<FindSettlePageVODetailInfo.DetailInfoRecord> records = body.getDetailInfo().getRecords();
-        BillAcceptanceDisclosureDataExcelDownloadDTO vo;
+        ExcelDownloadDTO vo;
         for (FindSettlePageVODetailInfo.DetailInfoRecord r : records) {
-            vo = new BillAcceptanceDisclosureDataExcelDownloadDTO();
+            vo = new ExcelDownloadDTO();
             vo.setIndex(index.addAndGet(1));
             vo.setShowMonth(showMonth);
             vo.setAcptName(baseInfo.getEntName());

@@ -1,4 +1,4 @@
-package xin.cosmos.basic.api.dict;
+package xin.cosmos.basic.dict;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;

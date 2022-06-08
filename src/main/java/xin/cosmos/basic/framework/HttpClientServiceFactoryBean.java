@@ -1,6 +1,7 @@
 package xin.cosmos.basic.framework;
 
 import org.springframework.beans.factory.FactoryBean;
+import xin.cosmos.basic.constant.SpringProxyPackages;
 import xin.cosmos.basic.framework.annotation.ApiScanner;
 
 import java.lang.reflect.InvocationHandler;
@@ -9,10 +10,10 @@ import java.lang.reflect.Proxy;
 /**
  * 通过Bean工厂创建JDK动态代理实例
  *
- * @author geng
  * @param <T>
+ * @author geng
  */
-@ApiScanner(packages = {"xin.cosmos.basic.api"})
+@ApiScanner(packages = {SpringProxyPackages.BILL_CREDIT_DISCLOSURE})
 public class HttpClientServiceFactoryBean<T> implements FactoryBean<T> {
 
     private final Class<T> serviceInterfaceClass;

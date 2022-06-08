@@ -1,14 +1,14 @@
-package xin.cosmos.dto;
+package xin.cosmos.disclosure.entity;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
-import xin.cosmos.basic.api.dict.bill.disclosure.ShowStatus;
+import xin.cosmos.disclosure.api.dict.ShowStatus;
 
 @ApiModel(description = "票据承兑信用信息披露Excel下载-实体")
 @Data
-public class BillAcceptanceDisclosureDataExcelDownloadDTO {
+public class ExcelDownloadDTO {
     @ExcelProperty(value = "序号")
     private int index;
     //=============基本信息===============

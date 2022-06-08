@@ -1,9 +1,9 @@
-package xin.cosmos.basic.api.dict.bill.disclosure;
+package xin.cosmos.disclosure.api.dict;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import xin.cosmos.basic.api.dict.ApiDict;
+import xin.cosmos.basic.dict.ApiDict;
 
 @ApiModel(description = "票据承兑信用信息披露查询-承兑人机构类别")
 @AllArgsConstructor
