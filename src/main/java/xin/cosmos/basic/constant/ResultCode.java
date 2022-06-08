@@ -13,6 +13,7 @@ public enum ResultCode {
     E("响应失败", "操作失败"),
     NO_SUCH_DICT("解析枚举失败", "不存在的枚举字典值"),
     ILLEGAL_PARAM("参数不合法", "参数不合法"),
+    ILLEGAL_PROXY("代理配置不合法", "代理配置不合法"),
 
     ;
 

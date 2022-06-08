@@ -1,5 +1,6 @@
 package xin.cosmos.basic.httpclient;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -51,6 +53,14 @@ class HttpClientTool {
      */
     protected HttpClientTool proxyHost(HttpHost proxyHost) {
         this.proxyHost = proxyHost;
+        return this;
+    }
+
+    protected HttpClientTool proxy(String proxyIpOrHost, int proxyPort) {
+        if (ObjectsUtil.isNull(proxyIpOrHost) || proxyPort <= 0) {
+            return this;
+        }
+        this.proxyHost = new HttpHost(proxyIpOrHost, proxyPort);
         return this;
     }
 
@@ -92,7 +102,7 @@ class HttpClientTool {
             HttpGet httpGet = new HttpGet(url);
             // 设置请求头参数
             ObjectsUtil.nonNullTodo(headers, () -> headers.forEach(httpGet::setHeader));
-            logInfo(httpGet, url, params);
+            logRequestInfo("GET", httpGet, url, params);
 
             // 设置代理
             this.setPoxy(httpGet);
@@ -112,7 +122,7 @@ class HttpClientTool {
             }
             EntityUtils.consume(entity);
             response.close();
-            logResult(result);
+            logResponseInfo(result);
             return result;
         } catch (Exception e) {
             log.error("Httpclient 与第三方通信异常", e);
@@ -151,7 +161,7 @@ class HttpClientTool {
 
         httpPost.setHeader("Content-Type", ContentType.TEXT_PLAIN.withCharset(StandardCharsets.UTF_8).getMimeType());
         httpPost.setEntity(new StringEntity(params.toString(), StandardCharsets.UTF_8));
-        logInfo(httpPost, url, params);
+        logRequestInfo("POST", httpPost, url, params);
         CloseableHttpResponse response = null;
         try {
             // 设置代理
@@ -171,7 +181,7 @@ class HttpClientTool {
                 result = EntityUtils.toString(entity, this.charset);
             }
             EntityUtils.consume(entity);
-            logResult(result);
+            logResponseInfo(result);
             return result;
         } catch (Exception e) {
             log.error("Httpclient 与第三方通信异常", e);
@@ -210,27 +220,21 @@ class HttpClientTool {
     /**
      * 打印接口请求日志信息
      *
+     * @param method
      * @param httpMessage
      * @param url
      * @param params
      */
-    private void logInfo(AbstractHttpMessage httpMessage, String url, Object params) {
+    private void logRequestInfo(String method, AbstractHttpMessage httpMessage, String url, Object params) {
         if (!log.isInfoEnabled()) {
             return;
         }
-        log.info("╔═════════════════════════════════════════════════════════");
-        log.info("║—————请求URL:");
-        log.info("║{}", url);
-        log.info("║—————请求头:");
-        Header[] headers = httpMessage.getAllHeaders();
-        Arrays.stream(headers).forEach(header -> log.info("║{} => {}", header.getName(), header.getValue()));
-        log.info("║—————请求参数:");
-        if (params instanceof Map<?, ?>) {
-            Map<?, ?> map = (Map<?, ?>) params;
-            map.forEach((k, v) -> log.info("║{} => {}", k, v));
-        } else {
-            log.info("║{}", params.toString());
-        }
+        log.info("╔═════════════");
+        log.info("║—请求方式:{}", method);
+        log.info("║—请求地址:{}", url);
+        log.info("║—请求头:{}", JSON.toJSONString(Arrays.stream(httpMessage.getAllHeaders())
+                .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue))));
+        log.info("║—请求参数:{}", JSON.toJSONString(params));
     }
 
     /**
@@ -238,13 +242,12 @@ class HttpClientTool {
      *
      * @param result
      */
-    private void logResult(String result) {
+    private void logResponseInfo(String result) {
         if (!log.isInfoEnabled()) {
             return;
         }
-        log.info("║—————响应结果:");
-        log.info("║{}", result);
-        log.info("╚═════════════════════════════════════════════════════════");
+        log.info("║—响应结果:{}", result);
+        log.info("╚═════════════");
     }
 
     /**
@@ -254,7 +257,7 @@ class HttpClientTool {
      */
     private void setPoxy(HttpRequestBase httpRequestBase) {
         // 代理地址或代理端口为空则不进行代理
-        if (ObjectsUtil.isNull(this.proxyHost) || ObjectsUtil.isNull(this.proxyHost.getHostName()) || this.proxyHost.getPort() <= 0) {
+        if (ObjectsUtil.isNull(this.proxyHost)) {
             return;
         }
         RequestConfig build = RequestConfig.custom().setProxy(proxyHost).build();

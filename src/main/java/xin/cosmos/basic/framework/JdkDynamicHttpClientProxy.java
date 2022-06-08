@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import lombok.extern.slf4j.Slf4j;
 import xin.cosmos.basic.config.props.ProxyProperties;
+import xin.cosmos.basic.constant.ResultCode;
 import xin.cosmos.basic.exception.PlatformException;
 import xin.cosmos.basic.framework.annotation.ApiService;
 import xin.cosmos.basic.framework.annotation.ApiSupport;
@@ -80,8 +81,11 @@ public class JdkDynamicHttpClientProxy<T> implements InvocationHandler {
 
         // 设置代理
         ProxyProperties proxyProperties = ContextHolder.getBean(ProxyProperties.class);
-        if (proxyProperties.isEnable() && !ObjectsUtil.isNull(proxyProperties.getHost()) && !ObjectsUtil.isNull(proxyProperties.getPort())) {
-            httpClient.proxyHost(proxyProperties.getHost()).proxyPort(proxyProperties.getPort());
+        if (proxyProperties.isEnable()) {
+            if (ObjectsUtil.isNull(proxyProperties.getHost()) || ObjectsUtil.isNull(proxyProperties.getPort())) {
+                throw new PlatformException(ResultCode.ILLEGAL_PROXY, "启用代理时，代理地址及代理端口为必填项，请在全局配置文件指定proxy.host 及 proxy.port的值");
+            }
+            httpClient.proxy(proxyProperties.getHost(), proxyProperties.getPort());
         }
 
         Map<String, String> headers = null;

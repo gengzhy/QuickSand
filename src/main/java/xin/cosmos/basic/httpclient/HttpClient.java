@@ -3,6 +3,7 @@ package xin.cosmos.basic.httpclient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.CloseableHttpClient;
+import xin.cosmos.basic.util.ObjectsUtil;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -47,23 +48,14 @@ public class HttpClient {
     }
 
     /**
-     * 设置代理主机IP或地址
+     * 设置代理主机IP(或地址) 及 代理端口
      *
      * @param proxyIpOrHost 代理IP或地址
+     * @param proxyPort     代理端口
      * @return
      */
-    public HttpClient proxyHost(String proxyIpOrHost) {
+    public HttpClient proxy(String proxyIpOrHost, int proxyPort) {
         this.proxyIpOrHost = proxyIpOrHost;
-        return this;
-    }
-
-    /**
-     * 设置代理端口
-     *
-     * @param proxyPort 代理端口
-     * @return
-     */
-    public HttpClient proxyPort(int proxyPort) {
         this.proxyPort = proxyPort;
         return this;
     }
@@ -88,11 +80,8 @@ public class HttpClient {
      * @return
      */
     public String post(String url, Map<String, String> headers, Object params) {
-        CloseableHttpClient chc = this.initHttpClientCustBuild(url).timeout(timeout).build();
-        HttpClientTool httpClientTool = HttpClientTool.create(chc, charset);
-        // 设置代理
-        httpClientTool.proxyHost(new HttpHost(this.proxyIpOrHost, this.proxyPort));
-        return httpClientTool.doPost(url, headers, params);
+        CloseableHttpClient chc = httpClientCustBuild(url).timeout(timeout).build();
+        return HttpClientTool.create(chc, charset).proxy(this.proxyIpOrHost, this.proxyPort).doPost(url, headers, params);
     }
 
 
@@ -116,16 +105,12 @@ public class HttpClient {
      * @return
      */
     public String get(String url, Map<String, String> headers, Object params) {
-        HttpClientCustBuild httpClientCustBuild = this.initHttpClientCustBuild(url);
-        CloseableHttpClient chc = httpClientCustBuild.timeout(timeout).build();
+        CloseableHttpClient chc = httpClientCustBuild(url).timeout(timeout).build();
         Map<String, Object> map = objectToMap(params);
-        HttpClientTool httpClientTool = HttpClientTool.create(chc, charset);
-        // 设置代理
-        httpClientTool.proxyHost(new HttpHost(this.proxyIpOrHost, this.proxyPort));
-        return httpClientTool.doGet(url, headers, map);
+        return HttpClientTool.create(chc, charset).proxy(this.proxyIpOrHost, this.proxyPort).doGet(url, headers, map);
     }
 
-    private HttpClientCustBuild initHttpClientCustBuild(String url) {
+    private HttpClientCustBuild httpClientCustBuild(String url) {
         if (url.toLowerCase().startsWith("https://")) {
             return HttpClientCustBuild.getInstance().ssl();
         } else {
@@ -138,7 +123,6 @@ public class HttpClient {
      *
      * @param obj
      * @return
-     * @throws IllegalAccessException
      */
     @SuppressWarnings("unchecked")
     private Map<String, Object> objectToMap(Object obj) {

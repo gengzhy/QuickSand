@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
         // 普通请求
         else {
             modelAndView = new ModelAndView();
-            modelAndView.setViewName("error");
+            modelAndView.setViewName("error/error");
             this.handleSpecialException(ex, handle, modelAndView);
             PrintWriter writer = new PrintWriter(new StringWriter());
             ex.printStackTrace(writer);
@@ -51,24 +51,20 @@ public class GlobalExceptionHandler {
     }
 
     private void handleSpecialException(Exception e, HandlerMethod handle, ModelAndView modelAndView) {
-        log.error("全局异常接口：{}#{}{}", handle.getBean().getClass().getName(),
-                handle.getMethod().getName(), paramTypes(handle));
+        log.warn("[请求异常接口信息]{}#{}{}", handle.getBean().getClass().getName(), handle.getMethod().getName(), paramTypes(handle));
 
         if (e instanceof BusinessException) {
             BusinessException ex = (BusinessException) e;
-            log.error("业务级别异常错误:{} - {} \n{stack trace} ==========> \n{}",
-                    ex.getResultCode().name(), ex.getMessage(), trance(ex.getStackTrace()));
+            log.error("[业务级别异常]{} - {} \n[call stack]=>\n", ex.getResultCode().name(), ex.getMessage(), e);
             modelAndView.addObject("code", ex.getResultCode());
             modelAndView.addObject("message", ex.getMessage());
         } else if (e instanceof PlatformException) {
             PlatformException ex = (PlatformException) e;
-            log.error("平台级别异常错误:{} - {} \n{stack trace} ==========> \n{}",
-                    ex.getResultCode().name(), ex.getMessage(), trance(ex.getStackTrace()));
+            log.error("[平台级别异常]{} - {} \n[call stack]=>\n", ex.getResultCode().name(), ex.getMessage(), e);
             modelAndView.addObject("code", ex.getResultCode());
             modelAndView.addObject("message", ex.getMessage());
         } else {
-            log.error("全局级别异常错误:{} \n{stack trace} ==========> \n{}",
-                    e.getMessage(), trance(e.getStackTrace()));
+            log.error("[全局级别异常]{} \n[call stack]=>\n", e.getMessage(), e);
             modelAndView.addObject("code", DEFAULT_ERROR_CODE);
             modelAndView.addObject("message", DEFAULT_ERROR_MSG);
         }
