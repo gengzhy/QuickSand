@@ -1,21 +1,25 @@
 package xin.cosmos;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.Cell;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.metadata.holder.ReadHolder;
 import com.alibaba.excel.read.metadata.holder.xls.XlsReadSheetHolder;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import xin.cosmos.basic.base.RedisService;
 import xin.cosmos.basic.ssh2.Ssh2Service;
+import xin.cosmos.report.entity.G01FillModel;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
@@ -55,9 +59,33 @@ class QuickSandApplicationTests {
         redisService.syncSave();
     }
 
+    /**
+     * Excel填充数据测试
+     */
+    @Test
+    public void testFillExcelTemplate() {
+        String templatePath = "report/G01_template.xls";
+        String file = "F:/G01" + System.currentTimeMillis() + ".xls";
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(templatePath);
+        G01FillModel model = G01FillModel.builder()
+                .g_6_a(100D).g_7_a(80D).g_8_a(99D).g_9_a(1100D).g_10_a(1000D)
+                .g_18_a(100D).g_19_a(80D).g_20_a(99D).g_21_a(1100D).g_22_a(1000D)
+                .build();
+        ExcelWriter writer = EasyExcel.write(file).withTemplate(inputStream).build();
+        Workbook workbook = writer.writeContext().writeWorkbookHolder().getWorkbook();
+        // 必须设置强制计算公式：不然公式会以字符串的形式显示在excel中，而不进行相关的运算
+        workbook.setForceFormulaRecalculation(true);
+
+        // 填充数据
+        WriteSheet sheet = EasyExcel.writerSheet(0).build();
+        writer.fill(model, sheet);
+        writer.finish();
+        System.out.println("执行完毕");
+    }
+
     @Test
     public void testEasyExcel() {
-        String path = "G01（211-3）模板.xls";
+        String path = "report/G01_template.xls";
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
         EasyExcel.read(inputStream, new AnalysisEventListener<LinkedHashMap<Integer, Object>>() {
             @Override
