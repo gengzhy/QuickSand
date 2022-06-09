@@ -3,6 +3,8 @@ package xin.cosmos.report.entity;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * G01资产负债项目统计表-Excel填充模板模型数据
  * <p>
@@ -39,7 +41,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“大型银行、股份制商业银行、城市商业银行、农商行、邮储、民营银行、外资银行”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_6_a;
+    private BigDecimal g_6_a;
 
     /**
      * 项目名称:4.2 境内其他银行业金融机构-人民币
@@ -51,7 +53,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“政策性银行、国开行、农合行、农信（联社）、村镇银行、农村资金互助社、贷款公司、财务公司、信托、金融租赁公司、汽车金融公司、货币经纪公司、消费金融公司、金融资产管理公司”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_7_a;
+    private BigDecimal g_7_a;
 
     /**
      * 项目名称:4.3 境内证券业金融机构-人民币
@@ -63,7 +65,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“证券公司”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_8_a;
+    private BigDecimal g_8_a;
 
     /**
      * 项目名称:4.4 境内保险业金融机构-人民币
@@ -75,7 +77,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“保险公司”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_9_a;
+    private BigDecimal g_9_a;
 
     /**
      * 项目名称:4.5 境内其他金融机构-人民币
@@ -87,7 +89,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“spv”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_10_a;
+    private BigDecimal g_10_a;
 
     /**
      * 项目名称:10.1 境内商业银行-人民币
@@ -100,7 +102,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“大型银行、股份制商业银行、城市商业银行、农商行、邮储、民营银行、外资银行”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_18_a;
+    private BigDecimal g_18_a;
 
     /**
      * 项目名称:10.2 境内其他银行业金融机构-人民币
@@ -113,7 +115,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“政策性银行、国开行、农合行、农信（联社）、村镇银行、农村资金互助社、贷款公司、财务公司、信托、金融租赁公司、汽车金融公司、货币经纪公司、消费金融公司、金融资产管理公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_19_a;
+    private BigDecimal g_19_a;
 
     /**
      * 项目名称:10.3 境内证券业金融机构-人民币
@@ -126,7 +128,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“证券公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_20_a;
+    private BigDecimal g_20_a;
 
     /**
      * 项目名称:10.4 境内保险业金融机构-人民币
@@ -139,7 +141,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“保险公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_21_a;
+    private BigDecimal g_21_a;
 
     /**
      * 项目名称:10.5 境内其他金融机构-人民币
@@ -152,7 +154,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“spv”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_22_a;
+    private BigDecimal g_22_a;
 
     /**
      * 项目名称:12.1 债券-人民币
@@ -163,7 +165,7 @@ public class G01FillModel {
      * 1、“合计”栏合计数
      * 2、单位为万元，小数点保留两位
      */
-    private Double g_26_a;
+    private BigDecimal g_26_a;
 
     /**
      * 项目名称:12.3 其他-人民币
@@ -174,7 +176,7 @@ public class G01FillModel {
      * 1、“其他应收款项类投资”栏合计数
      * 2、单位为万元，小数点保留两位
      */
-    private Double g_28_a;
+    private BigDecimal g_28_a;
 
     /**
      * 项目名称:13.1 境内商业银行-人民币
@@ -187,7 +189,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“大型银行、股份制商业银行、城市商业银行、农商行、邮储、民营银行、外资银行”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_31_a;
+    private BigDecimal g_31_a;
 
     /**
      * 项目名称:13.2 境内其他银行业金融机构-人民币
@@ -200,7 +202,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“政策性银行、国开行、农合行、农信（联社）、村镇银行、农村资金互助社、贷款公司、财务公司、信托、金融租赁公司、汽车金融公司、货币经纪公司、消费金融公司、金融资产管理公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_32_a;
+    private BigDecimal g_32_a;
 
     /**
      * 项目名称:13.3境内证券业金融机构-人民币
@@ -213,7 +215,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“证券公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_33_a;
+    private BigDecimal g_33_a;
 
     /**
      * 项目名称:13.4 境内保险业金融机构-人民币
@@ -226,7 +228,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“保险公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_34_a;
+    private BigDecimal g_34_a;
 
     /**
      * 项目名称:13.5 境内其他金融机构-人民币
@@ -239,7 +241,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“spv”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_35_a;
+    private BigDecimal g_35_a;
 
     /**
      * 项目名称:13.6 境外金融机构-人民币
@@ -248,7 +250,7 @@ public class G01FillModel {
      * <p>
      * 取数规则:
      */
-    private Double g_36_a;
+    private BigDecimal g_36_a;
 
     /**
      * 项目名称:13.7 境内外非金融机构-人民币
@@ -261,7 +263,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“小额贷款公司、典当、融资担保公司等”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_37_a;
+    private BigDecimal g_37_a;
 
 //    /**
 //     * Todo 本表中不建议写
@@ -271,7 +273,7 @@ public class G01FillModel {
 //     * <p>
 //     * 取数规则:C34-C46
 //     */
-//    private Double g_39_a;
+//    private BigDecimal g_39_a;
 
     /**
      * 项目名称:       13.9.4 其他-人民币
@@ -284,7 +286,7 @@ public class G01FillModel {
      * 3、“托管机构”栏筛选为“上清”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_42_a;
+    private BigDecimal g_42_a;
 
     /**
      * 项目名称:23.4投资同业存单-人民币
@@ -295,7 +297,7 @@ public class G01FillModel {
      * 1、“剩余期限”栏筛选为“正数”
      * 2、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_56_a;
+    private BigDecimal g_56_a;
 
     /**
      * 项目名称:29.1 境内商业银行-人民币
@@ -307,7 +309,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“大型银行、股份制商业银行、城市商业银行、农商行、邮储、民营银行、外资银行”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_64_a;
+    private BigDecimal g_64_a;
 
     /**
      * 项目名称:29.2 境内其他银行业金融机构-人民币
@@ -319,7 +321,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“政策性银行、国开行、农合行、农信（联社）、村镇银行、农村资金互助社、贷款公司、财务公司、信托、金融租赁公司、汽车金融公司、货币经纪公司、消费金融公司、金融资产管理公司”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_65_a;
+    private BigDecimal g_65_a;
 
     /**
      * 项目名称:29.3 境内证券业金融机构-人民币
@@ -331,7 +333,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“证券公司”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_66_a;
+    private BigDecimal g_66_a;
 
     /**
      * 项目名称:29.4 境内保险业金融机构-人民币
@@ -343,7 +345,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“保险公司”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_67_a;
+    private BigDecimal g_67_a;
 
     /**
      * 项目名称:29.5境内其他金融机构-人民币
@@ -355,7 +357,7 @@ public class G01FillModel {
      * 2、“对手性质”栏筛选为“spv”
      * 3、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_68_a;
+    private BigDecimal g_68_a;
 
     /**
      * 项目名称:30.1 境内商业银行-人民币
@@ -368,7 +370,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“大型银行、股份制商业银行、城市商业银行、农商行、邮储、民营银行、外资银行”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_71_a;
+    private BigDecimal g_71_a;
 
     /**
      * 项目名称:30.2 境内其他银行业金融机构-人民币
@@ -381,7 +383,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“政策性银行、国开行、农合行、农信（联社）、村镇银行、农村资金互助社、贷款公司、财务公司、信托、金融租赁公司、汽车金融公司、货币经纪公司、消费金融公司、金融资产管理公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_72_a;
+    private BigDecimal g_72_a;
 
     /**
      * 项目名称:30.3 境内证券业金融机构-人民币
@@ -394,7 +396,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“证券公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_73_a;
+    private BigDecimal g_73_a;
 
     /**
      * 项目名称:30.4 境内保险业金融机构-人民币
@@ -407,7 +409,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“保险公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_74_a;
+    private BigDecimal g_74_a;
 
     /**
      * 项目名称:30.5 境内其他金融机构-人民币
@@ -420,7 +422,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“spv”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_75_a;
+    private BigDecimal g_75_a;
 
     /**
      * 项目名称:31.1 境内商业银行-人民币
@@ -433,7 +435,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“大型银行、股份制商业银行、城市商业银行、农商行、邮储、民营银行、外资银行”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_78_a;
+    private BigDecimal g_78_a;
 
     /**
      * 项目名称:31.2 境内其他银行业金融机构-人民币
@@ -446,7 +448,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“政策性银行、国开行、农合行、农信（联社）、村镇银行、农村资金互助社、贷款公司、财务公司、信托、金融租赁公司、汽车金融公司、货币经纪公司、消费金融公司、金融资产管理公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_79_a;
+    private BigDecimal g_79_a;
 
     /**
      * 项目名称:31.3 境内证券业金融机构-人民币
@@ -459,7 +461,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“证券公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_80_a;
+    private BigDecimal g_80_a;
 
     /**
      * 项目名称:31.4 境内保险业金融机构-人民币
@@ -472,7 +474,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“保险公司”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_81_a;
+    private BigDecimal g_81_a;
 
     /**
      * 项目名称:31.5 境内其他金融机构-人民币
@@ -485,7 +487,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“spv”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_82_a;
+    private BigDecimal g_82_a;
 
     /**
      * 项目名称:31.6 境外金融机构-人民币
@@ -494,7 +496,7 @@ public class G01FillModel {
      * <p>
      * 取数规则:
      */
-    private Double g_83_a;
+    private BigDecimal g_83_a;
 
     /**
      * 项目名称:31.7 境内外非金融机构-人民币
@@ -507,7 +509,7 @@ public class G01FillModel {
      * 3、“对手性质”栏筛选为“小额贷款公司、典当、融资担保公司等”
      * 4、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_84_a;
+    private BigDecimal g_84_a;
 
     /**
      * 项目名称:47.2发行同业存单-人民币
@@ -518,7 +520,7 @@ public class G01FillModel {
      * 1、“剩余期限”栏筛选为“正数”
      * 2、筛选完毕后取“合计数”，单位为万元，小数点保留两位
      */
-    private Double g_107_a;
+    private BigDecimal g_107_a;
 
     /**
      * 项目名称:12.1a 国债-本外币合计
@@ -530,7 +532,7 @@ public class G01FillModel {
      * 2、“合计”栏合计数
      * 3、单位为万元，小数点保留两位
      */
-    private String g_134_c;
+    private BigDecimal g_134_c;
 
     /**
      * 项目名称:12.1b 地方政府债-本外币合计
@@ -542,7 +544,7 @@ public class G01FillModel {
      * 2、“合计”栏合计数
      * 3、单位为万元，小数点保留两位
      */
-    private String g_135_c;
+    private BigDecimal g_135_c;
 
     /**
      * 项目名称:12.1c 央行票据、政府机构债券和政策性金融债-本外币合计
@@ -554,7 +556,7 @@ public class G01FillModel {
      * 2、“合计”栏合计数
      * 3、单位为万元，小数点保留两位
      */
-    private String g_136_c;
+    private BigDecimal g_136_c;
 
     /**
      * 项目名称:12.1d 商业性金融债-本外币合计
@@ -566,7 +568,7 @@ public class G01FillModel {
      * 2、“合计”栏合计数
      * 3、单位为万元，小数点保留两位
      */
-    private String g_137_c;
+    private BigDecimal g_137_c;
 
     /**
      * 项目名称:12.1e 非金融企业债-本外币合计
@@ -578,6 +580,6 @@ public class G01FillModel {
      * 2、“合计”栏合计数
      * 3、单位为万元，小数点保留两位
      */
-    private String g_138_c;
+    private BigDecimal g_138_c;
 
 }
