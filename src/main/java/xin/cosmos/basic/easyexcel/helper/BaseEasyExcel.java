@@ -25,6 +25,7 @@ public class BaseEasyExcel {
 
     private static final String EXCEL_XLS = ".xls";
     private static final String EXCEL_XLSX = ".xlsx";
+    protected static final String EXCEL_KEY = "excel_key";
 
     /**
      * 设置response响应的Excel相关属性
@@ -45,6 +46,7 @@ public class BaseEasyExcel {
         String urlFileName = URLEncoder.encode(excelFileName, "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + urlFileName);
         response.setHeader("excel_file_name", urlFileName);
+        response.setHeader(EXCEL_KEY, excelFileName);
     }
 
     /**
@@ -55,11 +57,13 @@ public class BaseEasyExcel {
      */
     @SneakyThrows
     protected static void writeErrMsg(HttpServletResponse response, String errMsg) {
-        // 重置response
-        response.reset();
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
-        response.getWriter().println(JSON.toJSONString(ResultVO.failed(errMsg)));
+        try {
+            // 重置response
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            response.getWriter().println(JSON.toJSONString(ResultVO.failed(errMsg)));
+        } catch (Exception ignored) {}
     }
 
     /**

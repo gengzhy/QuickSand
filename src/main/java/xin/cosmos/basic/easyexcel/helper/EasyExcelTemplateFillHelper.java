@@ -1,28 +1,17 @@
 package xin.cosmos.basic.easyexcel.helper;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
 import com.alibaba.excel.write.metadata.WriteSheet;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.web.multipart.MultipartFile;
-import xin.cosmos.basic.easyexcel.framework.BatchPageReadListener;
 import xin.cosmos.basic.exception.PlatformException;
-import xin.cosmos.basic.util.ObjectsUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * EasyExcel 模板数据填充帮助类
@@ -35,13 +24,18 @@ public class EasyExcelTemplateFillHelper extends BaseEasyExcel {
      * <p>
      * 目标文件的Excel页签默认写入第一个
      *
-     * @param response             响应
-     * @param templateAbsolutePath 模板文件
-     * @param entityModel          模板数据模型实体
-     * @param targetFileName       文件文件名
+     * @param response       响应
+     * @param templateFile   模板文件
+     * @param entityModel    模板数据模型实体
+     * @param targetFileName 文件文件名
      */
-    public static void fillToResponse(HttpServletResponse response, String templateAbsolutePath, Object entityModel, String targetFileName) {
-        fillToResponse(response, new File(templateAbsolutePath), entityModel, targetFileName);
+    public static void fillToResponse(HttpServletResponse response, File templateFile, Object entityModel, String targetFileName) {
+        try {
+            fillToResponse(response, new FileInputStream(templateFile), entityModel, targetFileName, 0);
+        } catch (Exception e) {
+            log.error("写文件失败", e);
+            writeErrMsg(response, e.getMessage());
+        }
     }
 
     /**
@@ -49,62 +43,37 @@ public class EasyExcelTemplateFillHelper extends BaseEasyExcel {
      * <p>
      * 目标文件的Excel页签默认写入第一个
      *
-     * @param response       响应
-     * @param templateFile   模板文件
-     * @param entityModel    模板数据模型实体
-     * @param targetFileName 文件文件名
+     * @param response                响应
+     * @param templateFileInputStream 模板文件
+     * @param entityModel             模板数据模型实体
+     * @param targetFileName          文件文件名
      */
-    public static void fillToResponse(HttpServletResponse response, File templateFile, Object entityModel, String targetFileName) {
-        fillToResponse(response, templateFile, entityModel, targetFileName, 0);
+    public static void fillToResponse(HttpServletResponse response, InputStream templateFileInputStream, Object entityModel, String targetFileName) {
+        fillToResponse(response, templateFileInputStream, entityModel, targetFileName, 0);
     }
 
     /**
      * 根据Excel模板文件，向HttpServletResponse写入目标文件流
      *
-     * @param response       响应
-     * @param template       模板文件
-     * @param entityModel    模板数据模型实体
-     * @param targetFileName 文件文件名
-     * @param sheetNo        写入目标文件的Excel 第几个页签（下标从0开始）
+     * @param response                响应
+     * @param templateFileInputStream 模板文件
+     * @param entityModel             模板数据模型实体
+     * @param targetFileName          文件文件名
+     * @param sheetNo                 写入目标文件的Excel 第几个页签（下标从0开始）
      */
-    public static void fillToResponse(HttpServletResponse response, String templateAbsolutePath, Object entityModel, String targetFileName, int sheetNo) {
-        fillToResponse(response, new File(templateAbsolutePath), entityModel, targetFileName, sheetNo);
-    }
-
-    /**
-     * 根据Excel模板文件，向HttpServletResponse写入目标文件流
-     *
-     * @param response       响应
-     * @param templateFile   模板文件
-     * @param entityModel    模板数据模型实体
-     * @param targetFileName 文件文件名
-     * @param sheetNo        写入目标文件的Excel 第几个页签（下标从0开始）
-     */
-    public static void fillToResponse(HttpServletResponse response, File templateFile, Object entityModel, String targetFileName, int sheetNo) {
+    public static void fillToResponse(HttpServletResponse response, InputStream templateFileInputStream, Object entityModel, String targetFileName, int sheetNo) {
         try {
             // 设计响应的excel文件属性
             setExcelHttpServletResponseAttributes(response, targetFileName);
-            ExcelWriter writer = initExcelWriter(templateFile, response.getOutputStream());
+            ExcelWriter writer = initExcelWriter(response, templateFileInputStream);
             // 填充数据
             WriteSheet sheet = EasyExcel.writerSheet(sheetNo).build();
             writer.fill(entityModel, sheet);
             writer.finish();
         } catch (Exception ex) {
+            log.error("写文件失败", ex);
             writeErrMsg(response, ex.getMessage());
         }
-    }
-
-    /**
-     * 根据Excel模板文件，向HttpServletResponse写入目标文件流
-     *
-     * @param response             响应
-     * @param templateAbsolutePath 模板文件
-     * @param entityModel          模板数据模型实体
-     * @param targetFileName       文件文件名
-     * @param sheetName            写入目标文件的Excel 页签名称
-     */
-    public static void fillToResponse(HttpServletResponse response, String templateAbsolutePath, Object entityModel, String targetFileName, String sheetName) {
-        fillToResponse(response, new File(templateAbsolutePath), entityModel, targetFileName, sheetName);
     }
 
     /**
@@ -116,16 +85,17 @@ public class EasyExcelTemplateFillHelper extends BaseEasyExcel {
      * @param targetFileName 文件文件名
      * @param sheetName      写入目标文件的Excel 页签名称
      */
-    public static void fillToResponse(HttpServletResponse response, File templateFile, Object entityModel, String targetFileName, String sheetName) {
+    public static void fillToResponse(HttpServletResponse response, InputStream templateFile, Object entityModel, String targetFileName, String sheetName) {
         try {
             // 设计响应的excel文件属性
             setExcelHttpServletResponseAttributes(response, targetFileName);
-            ExcelWriter writer = initExcelWriter(templateFile, response.getOutputStream());
+            ExcelWriter writer = initExcelWriter(response, templateFile);
             // 填充数据
             WriteSheet sheet = EasyExcel.writerSheet(sheetName).build();
             writer.fill(entityModel, sheet);
             writer.finish();
         } catch (Exception ex) {
+            log.error("写文件失败", ex);
             writeErrMsg(response, ex.getMessage());
         }
     }
@@ -179,16 +149,15 @@ public class EasyExcelTemplateFillHelper extends BaseEasyExcel {
     /**
      * 初始化ExcelWriter
      *
-     * @param templateFile        模板文件
-     * @param targetFileOutStream 输出目标文件
-     * @return
+     * @param response     response输出流
+     * @param templateFile 模板文件
      */
-    private static ExcelWriter initExcelWriter(File templateFile, OutputStream targetFileOutStream) {
+    private static ExcelWriter initExcelWriter(HttpServletResponse response, InputStream templateFile) throws IOException {
         ExcelTypeEnum excelType = ExcelTypeEnum.XLS;
-        if (isXlsxExcelFile(templateFile.getAbsolutePath())) {
+        if (isXlsxExcelFile(response.getHeader(EXCEL_KEY))) {
             excelType = ExcelTypeEnum.XLSX;
         }
-        ExcelWriter writer = EasyExcel.write(targetFileOutStream).withTemplate(templateFile).excelType(excelType).build();
+        ExcelWriter writer = EasyExcel.write(response.getOutputStream()).withTemplate(templateFile).excelType(excelType).build();
         Workbook workbook = writer.writeContext().writeWorkbookHolder().getWorkbook();
         // 必须设置强制计算公式：不然公式会以字符串的形式显示在excel中，而不进行相关的运算
         workbook.setForceFormulaRecalculation(true);

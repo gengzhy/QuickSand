@@ -1,5 +1,8 @@
 package xin.cosmos.basic.util;
 
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
@@ -14,8 +17,18 @@ public final class FileUtils {
      * @param fileClassPath classpath下的文件
      * @return
      */
-    public static InputStream readFileWithClassPath(String fileClassPath) {
+    public static InputStream readFileStreamWithClassPath(String fileClassPath) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(fileClassPath);
+    }
+
+    /**
+     * 读取classpath下的文件数据
+     *
+     * @param fileClassPath classpath下的文件
+     * @return
+     */
+    public static File readFileWithClassPath(String fileClassPath) throws IOException {
+        return new ClassPathResource(fileClassPath).getFile();
     }
 
     /**
@@ -34,7 +47,6 @@ public final class FileUtils {
      * @param sourceFilePath
      * @param targetFilePath
      * @throws IOException
-     *
      */
     public static void copy(String sourceFilePath, String targetFilePath) throws IOException {
         Files.copy(Paths.get(sourceFilePath), Paths.get(targetFilePath));
