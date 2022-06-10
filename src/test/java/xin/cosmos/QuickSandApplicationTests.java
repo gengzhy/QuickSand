@@ -20,7 +20,9 @@ import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import xin.cosmos.basic.base.RedisService;
+import xin.cosmos.basic.easyexcel.helper.EasyExcelTemplateFillHelper;
 import xin.cosmos.basic.ssh2.Ssh2Service;
+import xin.cosmos.basic.util.FileUtils;
 import xin.cosmos.report.entity.G01FillModel;
 
 import javax.sql.DataSource;
@@ -67,9 +69,8 @@ class QuickSandApplicationTests {
      */
     @Test
     public void testFillExcelTemplate() {
-        String templatePath = "report/G01_template.xls";
-        String file = "F:/G01" + System.currentTimeMillis() + ".xls";
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(templatePath);
+        String targetFilePath = "e:/G01" + System.currentTimeMillis() + ".xls";
+        String templatePath = "e:/G01_template.xls";
         BigDecimal ten = BigDecimal.TEN;
         G01FillModel model = G01FillModel.builder()
                 .preparer("耿").reviewer("耿").charger("耿")
@@ -81,15 +82,8 @@ class QuickSandApplicationTests {
                 .g_81_a(ten).g_82_a(ten).g_83_a(ten).g_84_a(ten).g_107_a(ten).g_134_c(ten).g_135_c(ten).g_137_c(ten)
                 .g_138_c(ten).g_136_c(ten)
                 .build();
-        ExcelWriter writer = EasyExcel.write(file).withTemplate(inputStream).build();
-        Workbook workbook = writer.writeContext().writeWorkbookHolder().getWorkbook();
-        // 必须设置强制计算公式：不然公式会以字符串的形式显示在excel中，而不进行相关的运算
-        workbook.setForceFormulaRecalculation(true);
 
-        // 填充数据
-        WriteSheet sheet = EasyExcel.writerSheet(0).build();
-        writer.fill(model, sheet);
-        writer.finish();
+        EasyExcelTemplateFillHelper.fill(templatePath, targetFilePath, model);
         System.out.println("执行完毕");
     }
 
