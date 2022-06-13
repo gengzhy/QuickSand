@@ -23,5 +23,10 @@ public class Model {
     /**
      * 实体名称
      */
+    private String entityDesc;
+
+    /**
+     * 实体名称
+     */
     private List<ModelProperty> props;
 }

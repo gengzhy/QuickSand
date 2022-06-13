@@ -8,7 +8,6 @@ import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.metadata.holder.ReadHolder;
 import com.alibaba.excel.read.metadata.holder.ReadSheetHolder;
-import xin.cosmos.basic.generator.model.Model;
 import xin.cosmos.basic.generator.model.ModelProperty;
 
 import java.io.File;
@@ -51,7 +50,7 @@ public class ExcelHeadRowToPropertiesGenerator {
     public static List<ModelProperty> generate(InputStream excelFileInputStream, int sheetNo, int headRowNumber, int endColumnIndex) {
         // 最终返回的属性信息集合
         List<ModelProperty> propertyList = new LinkedList<>();
-        EasyExcel.read(excelFileInputStream, new ExcelHeadAnalysisEventListener(propertyList, endColumnIndex)).sheet(sheetNo).autoTrim(true).headRowNumber(headRowNumber).doRead();
+        EasyExcel.read(excelFileInputStream, new ExcelHeadAnalysisEventListener(propertyList, endColumnIndex)).sheet(sheetNo).headRowNumber(headRowNumber).doRead();
         return propertyList;
     }
 
