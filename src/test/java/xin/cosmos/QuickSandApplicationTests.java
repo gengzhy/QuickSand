@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.Cell;
+import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.metadata.holder.ReadHolder;
 import com.alibaba.excel.read.metadata.holder.ReadSheetHolder;
@@ -18,6 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import xin.cosmos.basic.base.RedisService;
 import xin.cosmos.basic.easyexcel.helper.EasyExcelTemplateFillHelper;
+import xin.cosmos.basic.generator.ExcelHeadRowToPropertiesGenerator;
+import xin.cosmos.basic.generator.FieldDataType;
+import xin.cosmos.basic.generator.model.Model;
+import xin.cosmos.basic.generator.model.ModelProperty;
 import xin.cosmos.basic.ssh2.Ssh2Service;
 import xin.cosmos.report.entity.G01FillModel;
 
@@ -25,7 +30,10 @@ import javax.sql.DataSource;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @SpringBootTest
@@ -132,6 +140,123 @@ class QuickSandApplicationTests {
 
             }
         }).sheet(0).autoTrim(true).headRowNumber(3).doRead();
+    }
+
+    @Test
+    public void testEasyExcelHead() {
+        String path = "report/表二.xlsx";
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        // 标题结束列下标
+        int headColumnEndIndex = 15;
+        List<ModelProperty> propertyList = new LinkedList<>();
+        EasyExcel.read(inputStream, new AnalysisEventListener<LinkedHashMap<Integer, Object>>() {
+            // 标题行数
+            int headRowEndIndex = 1;
+            // 记录遍历的标题行下标（从1）
+            AtomicInteger index = new AtomicInteger(1);
+            Map<Integer, ReadCellData<?>> heads = new LinkedHashMap<>();
+            // 暂存model属性
+            Map<Integer, ModelProperty> propertiesMap = new LinkedHashMap<>();
+
+            @Override
+            public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
+                headRowEndIndex = context.readSheetHolder().getHeadRowNumber();
+                if (index.getAndAdd(1) == headRowEndIndex) {
+                    headMap.forEach((k, v) -> {
+                        if (k <= headColumnEndIndex) {
+                            heads.put(k, v);
+                            String name = "c_"+ k;
+                            String remark = v.getStringValue();
+                            propertiesMap.put(k, ModelProperty.builder().index(k).name(name).remark(remark).build());
+                        }
+                    });
+                    return;
+                }
+                super.invokeHead(headMap, context);
+            }
+
+            @Override
+            public void invoke(LinkedHashMap<Integer, Object> data, AnalysisContext context) {
+                Integer rowIndex = context.readRowHolder().getRowIndex();
+                // invoke方法仅需要读取一行数据行，作为数据类型判断。不在进行往下处理
+                if (rowIndex > index.decrementAndGet()) {
+                    return;
+                }
+                ReadHolder holder = context.currentReadHolder();
+                // 如果不满足以下条件，全部数据类型默认为String
+                if (!(holder instanceof ReadSheetHolder)) {
+                    return;
+                }
+                ReadSheetHolder sheetHolder = (ReadSheetHolder) holder;
+                Map<Integer, Cell> cellMap = sheetHolder.getCellMap();
+                heads.forEach((index, v) -> {
+                    ReadCellData<?> cell = (ReadCellData<?>) cellMap.get(index);
+                    ModelProperty modelProperty = propertiesMap.get(index);
+                    if (cell == null || modelProperty == null) {
+                        return;
+                    }
+                    switch (cell.getType()) { // 日期
+                        case DATE:
+                            System.out.print(cell.getStringValue() +",");
+                            modelProperty.setType(FieldDataType.DATE.name());
+                            break;
+                        // 数字
+                        case NUMBER:
+                            // 时间格式
+                            DataFormatData formatData = cell.getDataFormatData();
+                            if (formatData == null) {
+                                modelProperty.setType(FieldDataType.NUMBER.name());
+                                break;
+                            }
+                            String format = formatData.getFormat();
+                            if (format.startsWith("#") || format.endsWith("%")) {
+                                modelProperty.setType(FieldDataType.NUMBER.name());
+                            } else if (format.startsWith("yyyy") || format.startsWith("YYYY")) {
+                                modelProperty.setType(FieldDataType.DATE.name());
+                            } else {
+                                modelProperty.setType(FieldDataType.NUMBER.name());
+                            }
+                            break;
+                        // 布尔值
+                        case BOOLEAN:
+                            modelProperty.setType(FieldDataType.BOOLEAN.name());
+                            break;
+                        default:
+                            modelProperty.setType(FieldDataType.STRING.name());
+                    }
+                });
+            }
+
+            @Override
+            public void doAfterAllAnalysed(AnalysisContext context) {
+                propertiesMap.forEach((k, v) -> {
+                    if (v.getType() == null) {
+                        v.setType(FieldDataType.STRING.name());
+                    }
+                });
+                propertyList.addAll(propertiesMap.values());
+            }
+        }).sheet(0).autoTrim(true).headRowNumber(1).doRead();
+
+        Model model = Model.builder()
+                .packageName("xin.cosmos.report.entity")
+                .entityName("InterBankIn")
+                .props(propertyList)
+                .build();
+        System.out.println(model);
+    }
+
+    @Test
+    public void testExcelHead() {
+        String path = "report/表二.xlsx";
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        List<ModelProperty> properties = ExcelHeadRowToPropertiesGenerator.generate(inputStream, 0, 1, 16);
+        Model model = Model.builder()
+                .packageName("xin.cosmos.report.entity")
+                .entityName("InterBankIn")
+                .props(properties)
+                .build();
+        System.out.println(model);
     }
 
 }
