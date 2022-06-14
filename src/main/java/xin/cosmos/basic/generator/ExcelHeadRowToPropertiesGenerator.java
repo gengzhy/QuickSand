@@ -93,9 +93,7 @@ public class ExcelHeadRowToPropertiesGenerator {
                         propertiesMap.put(k, ModelProperty.builder().index(k).name(name).remark(remark).build());
                     }
                 });
-                return;
             }
-            super.invokeHead(headMap, context);
         }
 
         @Override
@@ -132,9 +130,12 @@ public class ExcelHeadRowToPropertiesGenerator {
                             break;
                         }
                         String format = formatData.getFormat();
-                        if (format.startsWith("#") || format.endsWith("%")) {
-                            modelProperty.setType(FieldDataType.NUMBER.name());
-                        } else if (format.startsWith("yyyy") || format.startsWith("YYYY")) {
+                        // 百分数
+                        if (format.endsWith("%")) {
+                            modelProperty.setType(FieldDataType.PERCENT.name());
+                        }
+                        // 日期
+                        else if (format.startsWith("yyyy") || format.startsWith("YYYY")) {
                             modelProperty.setType(FieldDataType.DATE.name());
                         } else {
                             modelProperty.setType(FieldDataType.NUMBER.name());
