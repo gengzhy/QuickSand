@@ -2,7 +2,9 @@ package ${packageName};
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -11,13 +13,16 @@ import javax.persistence.*;
 <#else>
 @ApiModel(description = "${entityName}")
 </#if>
+@Entity
 <#if tableName??>
 @Table(name = "${tablePrefix!''}${tableName}")
 <#else>
 <#-- ${entityName?replace('([a-z])([A-Z]+)','$1_$2','r')?lower_case：表示将Java驼峰命名转换为全小写，下划线分隔 -->
 @Table(name = "${tablePrefix!''}${entityName?replace('([a-z])([A-Z]+)','$1_$2','r')?lower_case}")
 </#if>
-@Data
+@Getter
+@Setter
+@ToString
 public class ${entityName} {
 <#if props??>
     @Id

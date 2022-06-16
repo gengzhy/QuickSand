@@ -4,14 +4,10 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import xin.cosmos.basic.easyexcel.helper.EasyExcelHelper;
 import xin.cosmos.basic.generator.model.Model;
 import xin.cosmos.basic.generator.model.ModelProperty;
-import xin.cosmos.report.entity.Deposit_IssuanceInterBank;
 
 import java.io.*;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -46,7 +42,7 @@ public class Test {
         List<ModelProperty> properties = ExcelHeadRowToPropertiesGenerator.generate(template, 0, 1, 16);
         Model model = Model.builder()
                 .packageName("xin.cosmos.report.entity")
-                .entityName("Deposit_IssuanceInterBank")
+                .entityName("DepositIssuanceInterBank")
                 .entityDesc("发行同业存单-页签")
                 .tableName("deposit_issuance_inter_bank")
                 .tablePrefix("fr_")

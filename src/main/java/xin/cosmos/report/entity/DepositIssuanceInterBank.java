@@ -5,14 +5,19 @@ import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.format.NumberFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @ApiModel(description = "发行同业存单-页签")
+@Entity
 @Table(name = "fr_deposit_issuance_inter_bank")
-@Data
-public class Deposit_IssuanceInterBank {
+@Getter
+@Setter
+@ToString
+public class DepositIssuanceInterBank {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
