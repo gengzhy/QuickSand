@@ -39,6 +39,6 @@ public interface UserRoleRelationshipDao extends JpaRepository<UserRoleRelations
     int deleteByUserId(Long userId);
 
     @Modifying
-    @Query(value = "insert into u_user_role_relationship(user_id,role_id,version) values(?1,?2,?3)", nativeQuery = true)
-    int add(Long userId, Long roleId, int version);
+    @Query(value = "insert into u_user_role_relationship(user_id,role_id) values(?1,?2)", nativeQuery = true)
+    int add(Long userId, Long roleId);
 }

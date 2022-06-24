@@ -16,15 +16,7 @@ public class UserRoleRelationshipService {
 
     @Transactional
     public UserRoleRelationship testTx(Long userId, Long roleId) {
-        if (userRoleRelationshipDao.existsByUserId(userId)) {
-//            if (userRoleRelationshipDao.existsByUserIdAndRoleId(userId, roleId)) {
-//                return null;
-//            }
-            userRoleRelationshipDao.deleteByUserId(userId);
-        }
-        int i = userRoleRelationshipDao.add(userId, roleId, 0);
-        log.info("新增成功:{}, data:[user_id:{},role_id:{}]", i>0, userId, roleId);
-        return null;
+        return this.saveJpa(userId, roleId);
     }
 
     /**
