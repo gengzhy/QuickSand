@@ -46,4 +46,12 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
     database-platform: org.hibernate.dialect.MySQL5Dialect
     properties.hibernate.dialect: org.hibernate.dialect.MySQL5Dialect # 使用JPA创建表时，默认使用的存储引擎是MyISAM，通过指定数据库版本，可以使用InnoDB
+    properties.hibernate.show_sql: true          #控制台是否打印
+#    properties.hibernate.format_sql: true        #格式化sql语句
+#    properties.hibernate.use_sql_comments: true  #指出是什么操作生成了该语句
+#    properties. hibernate.session_factory.statement_inspector: xin.cosmos.basic.prototype.JpaInterceptor #SQL打印处理
     open-in-view: true
+logging:
+  level:
+    org. hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
