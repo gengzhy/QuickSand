@@ -24,7 +24,7 @@ function download(response) {
         // 如果转换完中文出现乱码，可以设置一下代码
         reader.readAsText(response.data, "utf-8")
     } else {
-        downloadExcelFile(response.data, decodeURIComponent(response.headers["excel-file-name"]))
+        downloadExcelFile(response.data, decodeURIComponent(response.headers["excel-name"]))
     }
 }
 

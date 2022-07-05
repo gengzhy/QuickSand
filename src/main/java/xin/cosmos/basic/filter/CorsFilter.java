@@ -25,7 +25,7 @@ public class CorsFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         // 允许哪些Origin发起跨域请求
         String originHeader = request.getHeader("Allowed-Origin");
-        response.setHeader("Access-Control-Allow-Origin", originHeader);
+        response.setHeader("Access-Control-Allow-Origin", "*");
         // 允许请求的方法
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE,PUT");
         // 多少秒内，不需要再发送预检验请求

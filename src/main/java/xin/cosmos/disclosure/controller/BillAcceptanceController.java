@@ -90,7 +90,7 @@ public class BillAcceptanceController {
     @ResponseBody
     @PostMapping("/download/template")
     public void downloadExcelFile(HttpServletResponse response) {
-        String fileName = "票据承兑人元数据模板v" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssS"));
+        String fileName = "票据承兑人元数据模板v" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssS")) + ".xlsx";
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("template/bill_source_data_template.xlsx");
         List<MetaData> data = EasyExcelHelper.doReadExcelData(inputStream, MetaData.class);
         EasyExcelHelper.downloadExcelToResponse(response, fileName, data, MetaData.class);

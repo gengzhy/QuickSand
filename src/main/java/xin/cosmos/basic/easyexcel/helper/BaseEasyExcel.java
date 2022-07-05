@@ -6,6 +6,7 @@ import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
 import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.easyexcel.template.HeadVO;
 import xin.cosmos.basic.util.BeanMapUtil;
@@ -44,9 +45,12 @@ public class BaseEasyExcel {
         response.setCharacterEncoding("utf-8");
         // 这里URLEncoder.encode可以防止中文乱码 当然和easy excel没有关系
         String urlFileName = URLEncoder.encode(excelFileName, "UTF-8").replaceAll("\\+", "%20");
-        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + urlFileName);
-        response.setHeader("excel_file_name", urlFileName);
-        response.setHeader(EXCEL_KEY, excelFileName);
+        response.addHeader("content-disposition", "attachment;filename*=utf-8''" + urlFileName);
+        response.addHeader("excel-name", urlFileName);
+        // 将content-disposition和excel-name暴露给前端，否则前端无法取到header里面的属性
+        response.addHeader("access-control-expose-headers", "content-disposition");
+        response.addHeader("access-control-expose-headers", "excel-name");
+        response.addHeader(EXCEL_KEY, excelFileName);
     }
 
     /**
@@ -77,6 +81,9 @@ public class BaseEasyExcel {
             return false;
         }
         int dotIndex = excelFileName.lastIndexOf(".");
+        if (dotIndex == -1) {
+            return false;
+        }
         String suffix = excelFileName.substring(dotIndex);
         return EXCEL_XLSX.equalsIgnoreCase(suffix) || EXCEL_XLS.equalsIgnoreCase(suffix);
     }
@@ -92,6 +99,9 @@ public class BaseEasyExcel {
             return false;
         }
         int dotIndex = excelFileName.lastIndexOf(".");
+        if (dotIndex == -1) {
+            return false;
+        }
         String suffix = excelFileName.substring(dotIndex);
         return EXCEL_XLS.equalsIgnoreCase(suffix);
     }
