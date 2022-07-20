@@ -21,7 +21,6 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,8 +65,6 @@ public class BaiduOcrHandler {
      * 身份证正反面图片真正处理方法
      *
      * @param requestParams 请求参数
-     * @return
-     * @throws Exception
      */
     private static IdCard doPostFrontIdCard(String requestParams) throws Exception {
         String jsonStr = HttpUtil.post(BaiduOcrConstant.ID_CARD_FRONT_URL, getAccessToken(), requestParams);
@@ -115,8 +112,6 @@ public class BaiduOcrHandler {
      * 身份证正反面图片真正处理方法
      *
      * @param requestParams 请求参数
-     * @return
-     * @throws Exception
      */
     private static IdCard doPostMultiIdCard(String requestParams) throws Exception {
         String jsonStr = HttpUtil.post(BaiduOcrConstant.ID_CARD_MULTI_URL, getAccessToken(), requestParams);
@@ -167,8 +162,6 @@ public class BaiduOcrHandler {
      * 营业执照图片真正处理方法
      *
      * @param requestParams 请求参数
-     * @return
-     * @throws Exception
      */
     private static BusinessLicense doPostBusinessLicense(String requestParams) throws Exception {
         String jsonStr = HttpUtil.post(BaiduOcrConstant.BUSINESS_LICENSE_URL, getAccessToken(), requestParams);
@@ -190,6 +183,7 @@ public class BaiduOcrHandler {
      * @param meta   接口返回身份证元数据
      */
     private static void buildIdCard(IdCard idCard, JSONObject meta) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         for (Map.Entry<String, Object> entry : meta.entrySet()) {
             String key = entry.getKey();
             String resultStr = entry.getValue().toString();
@@ -226,7 +220,11 @@ public class BaiduOcrHandler {
                     break;
                 case IDCardKeywords.BACK_EXPIRE:
                     if (StringUtils.isNotBlank(value) && !"无".equals(value)) {
-                        idCard.setExpiredDate(idCardDateFormat.get().parse(value));
+                        if ("长期".equals(value)) {
+                            idCard.setExpiredDate(value);
+                        } else {
+                            idCard.setExpiredDate(dateFormat.format(idCardDateFormat.get().parse(value)));
+                        }
                     }
                     break;
                 default:
@@ -291,8 +289,6 @@ public class BaiduOcrHandler {
      * 获取目标文件类型的返回结果
      *
      * @param file File或MultipartFile类型
-     * @return
-     * @throws Exception
      */
     private static File transferToFile(Object file) throws Exception {
         File img;
@@ -310,8 +306,6 @@ public class BaiduOcrHandler {
      * 获取接口请求参数的base64编码格式的图片参数
      *
      * @param file
-     * @return
-     * @throws Exception
      */
     private static String getImageBase64Param(Object file) throws Exception {
         File img;

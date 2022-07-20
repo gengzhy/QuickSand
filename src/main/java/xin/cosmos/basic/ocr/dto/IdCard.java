@@ -35,6 +35,6 @@ public class IdCard {
     private Date signDate;
 
     @ApiModelProperty(value = "失效日期")
-    private Date expiredDate;
+    private String expiredDate;
 
 }
