@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 @ApiModel(description = "身份证对象")
 @Data
 public class IdCard {
@@ -18,7 +20,7 @@ public class IdCard {
     private String nation;
 
     @ApiModelProperty(value = "出生日期")
-    private String birthDate;
+    private Date birthDate;
 
     @ApiModelProperty(value = "住址")
     private String address;
@@ -30,9 +32,9 @@ public class IdCard {
     private String signOrg;
 
     @ApiModelProperty(value = "签发日期")
-    private String signDate;
+    private Date signDate;
 
     @ApiModelProperty(value = "失效日期")
-    private String expiredDate;
+    private Date expiredDate;
 
 }

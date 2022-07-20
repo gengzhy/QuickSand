@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 @ApiModel(description = "营业执照对象")
 @Data
 public class BusinessLicense {
@@ -33,7 +35,7 @@ public class BusinessLicense {
     private String registeredCapital;
 
     @ApiModelProperty(value = "成立日期")
-    private String companyCreateDate;
+    private Date companyCreateDate;
 
     @ApiModelProperty(value = "组成形式")
     private String layout;

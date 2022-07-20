@@ -4,10 +4,8 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 
 @ApiModel(description = "票据承兑人信息元数据")
-@ToString
 @Data
 public class MetaData {
 
