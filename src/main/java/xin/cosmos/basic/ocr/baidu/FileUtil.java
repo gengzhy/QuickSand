@@ -58,8 +58,7 @@ public class FileUtil {
             while (-1 != (len1 = in.read(buffer, 0, bufSize))) {
                 bos.write(buffer, 0, len1);
             }
-            byte[] var7 = bos.toByteArray();
-            return var7;
+            return bos.toByteArray();
         }
     }
 }

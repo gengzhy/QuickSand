@@ -1,4 +1,4 @@
-package xin.cosmos.basic.ocr.dto;
+package xin.cosmos.basic.ocr.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -35,7 +35,7 @@ public class BusinessLicense {
     private String registeredCapital;
 
     @ApiModelProperty(value = "成立日期")
-    private Date companyCreateDate;
+    private String companyCreateDate;
 
     @ApiModelProperty(value = "组成形式")
     private String layout;

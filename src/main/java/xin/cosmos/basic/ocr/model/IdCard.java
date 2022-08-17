@@ -1,10 +1,8 @@
-package xin.cosmos.basic.ocr.dto;
+package xin.cosmos.basic.ocr.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.Date;
 
 @ApiModel(description = "身份证对象")
 @Data
@@ -20,7 +18,7 @@ public class IdCard {
     private String nation;
 
     @ApiModelProperty(value = "出生日期")
-    private Date birthDate;
+    private String birthDate;
 
     @ApiModelProperty(value = "住址")
     private String address;
@@ -32,7 +30,7 @@ public class IdCard {
     private String signOrg;
 
     @ApiModelProperty(value = "签发日期")
-    private Date signDate;
+    private String signDate;
 
     @ApiModelProperty(value = "失效日期")
     private String expiredDate;

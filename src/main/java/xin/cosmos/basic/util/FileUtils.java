@@ -76,6 +76,7 @@ public final class FileUtils {
 
     /**
      * MultipartFile 转 File
+     * 会留下临时文件
      *
      * @param file
      * @throws Exception

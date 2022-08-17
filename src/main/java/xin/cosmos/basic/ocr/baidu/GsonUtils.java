@@ -13,17 +13,17 @@ import java.lang.reflect.Type;
  * Json工具类.
  */
 public class GsonUtils {
-    private static Gson gson = new GsonBuilder().create();
+    private final static Gson GSON = new GsonBuilder().create();
 
     public static String toJson(Object value) {
-        return gson.toJson(value);
+        return GSON.toJson(value);
     }
 
     public static <T> T fromJson(String json, Class<T> classOfT) throws JsonParseException {
-        return gson.fromJson(json, classOfT);
+        return GSON.fromJson(json, classOfT);
     }
 
     public static <T> T fromJson(String json, Type typeOfT) throws JsonParseException {
-        return (T) gson.fromJson(json, typeOfT);
+        return (T) GSON.fromJson(json, typeOfT);
     }
 }
