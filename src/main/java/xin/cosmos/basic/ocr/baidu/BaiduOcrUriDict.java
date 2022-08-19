@@ -87,8 +87,8 @@ public enum BaiduOcrUriDict {
     }
 
     /**
-     * 拿到OCRurl地址
-     * @return String
+     * 从{@linkplain com.baidu.aip.ocr.OcrConsts}拿到OCRurl地址
+     * @return String - OCR对应的真是地址
      */
     public String uri() {
         try {
@@ -103,10 +103,6 @@ public enum BaiduOcrUriDict {
         } catch (Exception e) {
             throw new PlatformException(e.getMessage());
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println("INTELLIGENT_OCR.getBaiduOcrUri() = " + MULTI_IDCARD.uri());
     }
 
 }

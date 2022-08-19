@@ -1,0 +1,9 @@
+#Baidu OCR
+ocr:
+  baidu:
+    #百度智能云注册的应用程序APP_ID
+    appId: APP_ID
+    #百度智能云注册的应用程序API_KEY
+    appKey: API_KEY
+    #百度智能云注册的应用程序SECRET_KEY
+    secretKey: SECRET_KEY

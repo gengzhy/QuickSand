@@ -1,4 +1,4 @@
-package xin.cosmos.basic.ocr.model;
+package xin.cosmos.basic.ocr.baidu.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

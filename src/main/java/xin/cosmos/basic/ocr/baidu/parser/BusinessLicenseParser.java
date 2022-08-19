@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import xin.cosmos.basic.exception.PlatformException;
-import xin.cosmos.basic.ocr.baidu.dict.LicenseKeywords;
-import xin.cosmos.basic.ocr.model.BusinessLicense;
+import xin.cosmos.basic.ocr.baidu.field.LicenseKeywords;
+import xin.cosmos.basic.ocr.baidu.model.BusinessLicense;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,17 +28,15 @@ public class BusinessLicenseParser implements ResponseParser<BusinessLicense> {
         if (result == null) {
             throw new PlatformException("识别营业执照接口返回信息状态失败");
         }
-        BusinessLicense license = new BusinessLicense();
-        buildBusinessLicense(license, result);
-        return license;
+        return buildBusinessLicense(result);
     }
     /**
      * 构建营业执照信息实体对象
-     *
-     * @param license 营业执照对象
      * @param meta    接口返回营业执照元数据
+     * @return
      */
-    private void buildBusinessLicense(BusinessLicense license, JSONObject meta) {
+    private BusinessLicense buildBusinessLicense(JSONObject meta) {
+        BusinessLicense license = new BusinessLicense();
         for (Map.Entry<String, Object> entry : meta.entrySet()) {
             String key = entry.getKey();
             String resultStr = entry.getValue().toString();
@@ -81,6 +79,7 @@ public class BusinessLicenseParser implements ResponseParser<BusinessLicense> {
                 default:
             }
         }
+        return license;
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
  */
-package xin.cosmos.basic.ocr.baidu;
+package xin.cosmos.basic.ocr.baidu.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

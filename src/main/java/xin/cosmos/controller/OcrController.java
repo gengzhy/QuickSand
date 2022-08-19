@@ -1,9 +1,12 @@
 package xin.cosmos.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -11,12 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import xin.cosmos.basic.define.ResultVO;
 import xin.cosmos.basic.ocr.baidu.BaiduOcr;
-import xin.cosmos.basic.ocr.baidu.FileUtil;
-import xin.cosmos.basic.ocr.baidu.parser.BusinessLicenseParser;
-import xin.cosmos.basic.ocr.baidu.parser.IDCardParser;
-import xin.cosmos.basic.ocr.model.BusinessLicense;
-import xin.cosmos.basic.ocr.model.IdCard;
-import xin.cosmos.basic.util.FileUtils;
+import xin.cosmos.basic.ocr.baidu.model.BusinessLicense;
+import xin.cosmos.basic.ocr.baidu.model.IdCard;
 
 /**
  * 调用百度的文字识别Api
@@ -27,22 +26,31 @@ import xin.cosmos.basic.util.FileUtils;
 @RequestMapping(value = "/ocr")
 public class OcrController {
 
+    @Autowired
+    private BaiduOcr baiduOcr;
+
     @ApiOperation(value = "身份证正面图片识别")
     @PostMapping("/idCard/front")
     public ResultVO<IdCard> idCardFront(@ApiParam(name = "file", value = "身份证正面图片", required = true) @RequestPart(value = "file") MultipartFile file) throws Exception {
-        return ResultVO.success(new IDCardParser().parse(BaiduOcr.create().idCardFront(FileUtil.readFileByBytes(FileUtils.transferToFile(file)))));
+        return ResultVO.success(baiduOcr.idCardFront(file));
     }
 
     @ApiOperation(value = "身份证图片识别")
     @PostMapping("/idCard")
     public ResultVO<IdCard> idCard(@ApiParam(name = "file", value = "身份证图片", required = true) @RequestPart(value = "file") MultipartFile file) throws Exception {
-        return ResultVO.success(new IDCardParser().parse(BaiduOcr.create().idCardMulti(FileUtil.readFileByBytes(FileUtils.transferToFile(file)))));
+        return ResultVO.success(baiduOcr.idCardMulti(file));
     }
 
     @ApiOperation(value = "营业执照图片识别")
     @PostMapping("/businessLicense")
     public ResultVO<BusinessLicense> businessLicense(@ApiParam(name = "file", value = "营业执照图片", required = true) @RequestPart(value = "file") MultipartFile file) throws Exception {
-        return ResultVO.success(new BusinessLicenseParser().parse(BaiduOcr.create().businessLicense(FileUtil.readFileByBytes(FileUtils.transferToFile(file)))));
+        return ResultVO.success(baiduOcr.businessLicense(file));
+    }
+
+    @ApiOperation(value = "增值税发票图片识别-图片格式")
+    @PostMapping("/vatInvoiceImage")
+    public ResultVO<JSONObject> vatInvoiceImage(@ApiParam(name = "file", value = "营业执照图片", required = true) @RequestPart(value = "file") MultipartFile file) throws Exception {
+        return ResultVO.success(JSON.parseObject(baiduOcr.vatInvoiceImage(file)));
     }
 
 }

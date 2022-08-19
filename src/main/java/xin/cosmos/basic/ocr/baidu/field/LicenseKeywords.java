@@ -1,4 +1,4 @@
-package xin.cosmos.basic.ocr.baidu.dict;
+package xin.cosmos.basic.ocr.baidu.field;
 
 /**
  * 营业执照关键字枚举字典

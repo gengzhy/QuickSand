@@ -1,10 +1,8 @@
-package xin.cosmos.basic.ocr.model;
+package xin.cosmos.basic.ocr.baidu.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.Date;
 
 @ApiModel(description = "营业执照对象")
 @Data

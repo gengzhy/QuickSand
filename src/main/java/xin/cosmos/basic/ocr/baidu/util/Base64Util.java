@@ -1,4 +1,4 @@
-package xin.cosmos.basic.ocr.baidu;
+package xin.cosmos.basic.ocr.baidu.util;
 
 /**
  * Base64 工具类

@@ -1,4 +1,4 @@
-package xin.cosmos.basic.ocr.baidu.dict;
+package xin.cosmos.basic.ocr.baidu.field;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

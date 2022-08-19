@@ -6,8 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import xin.cosmos.basic.exception.PlatformException;
-import xin.cosmos.basic.ocr.baidu.dict.IDCardKeywords;
-import xin.cosmos.basic.ocr.model.IdCard;
+import xin.cosmos.basic.ocr.baidu.field.IDCardKeywords;
+import xin.cosmos.basic.ocr.baidu.model.IdCard;
 
 import java.text.DateFormat;
 import java.text.ParseException;
