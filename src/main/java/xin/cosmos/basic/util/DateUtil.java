@@ -80,9 +80,4 @@ public class DateUtil {
         return LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault());
     }
 
-    public static void main(String[] args) {
-        System.out.println("formatDateTime(new Date()) = " + formatDate(new Date()));
-        System.out.println("formatDateTime(new Date()) = " + format(new Date()));
-        System.out.println("formatDateTime(new Date()) = " + formatTime(new Date()));
-    }
 }
