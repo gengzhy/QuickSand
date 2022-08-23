@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 文件处理工具
@@ -86,6 +90,49 @@ public final class FileUtils {
             return del.delete();
         }
         return false;
+    }
+
+    /**
+     * 修改文件的最后修改时间
+     *
+     * @param absoluteFilePath 文件路径
+     * @param date 最后修改时间
+     * @return
+     */
+    public static boolean modifyFileDate(String absoluteFilePath, LocalDateTime date) {
+        File file = new File(absoluteFilePath);
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    modifyFileDate(f.getAbsolutePath(), date);
+                }
+            }
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(Date.from(date.atZone(ZoneId.systemDefault()).toInstant()));
+        return file.setLastModified(calendar.getTimeInMillis());
+    }
+
+    /**
+     * 修改文件的最后修改时间
+     *
+     * @param absoluteFilePath 文件路径
+     * @param diffDays 距离文件最后修改时间的差的天数（整数表示最后修改日期往后延，负数表示最后修改时间往前移）
+     * @return
+     */
+    public static boolean modifyFileDate(String absoluteFilePath, int diffDays) {
+        File file = new File(absoluteFilePath);
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    modifyFileDate(f.getAbsolutePath(), diffDays);
+                }
+            }
+        }
+        long diffMillis = file.lastModified() + 24L * 60 * 60 * 1000 * diffDays;
+        return file.setLastModified(diffMillis);
     }
 
 }
