@@ -1,18 +1,20 @@
 package xin.cosmos.basic.doc;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.*;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * word文档处理
  */
-public class DocxHandler implements IDocHandler<Object> {
+@Slf4j
+public class DocxHandler implements IDocHandler {
     XWPFDocument document;
 
     private DocxHandler(String docxFile) {
@@ -29,7 +31,21 @@ public class DocxHandler implements IDocHandler<Object> {
     }
 
     @Override
-    public Object read() {
+    public DocxHandler fill(Map<String, Object> params) {
+        readBefore();
+
+        // 段落
+//        List<XWPFParagraph> paragraphs = document.getParagraphs();
+//        copy(paragraphs);
+
+        // 表格
+        List<XWPFTable> tables = document.getTables();
+        copy(tables, params);
+        return this;
+    }
+
+    @Override
+    public Map<String, Object> read() {
         readBefore();
 
         // 段落
@@ -38,16 +54,62 @@ public class DocxHandler implements IDocHandler<Object> {
 
         // 表格
         List<XWPFTable> tables = document.getTables();
-
+        readTables(tables);
         return null;
     }
 
+    private void copy(List<XWPFTable> tables, Map<String, Object> params) {
+        for (int i = 0; i < tables.size(); i++) {
+            XWPFTable table = tables.get(i);
+            List<XWPFTableRow> rows = table.getRows();
+            for (int j = 0; j < rows.size(); j++) {
+                XWPFTableRow tableRow = rows.get(j);
+                List<XWPFTableCell> tableCells = tableRow.getTableCells();
+                for (int k = 0; k < tableCells.size(); k++) {
+                    log.info("正在处理第{}个表格第{}行第{}列数据", i + 1, j + 1, k + 1);
+                    XWPFTableCell tableCell = tableCells.get(k);
+                    replaceTableCellValue(tableCell, params);
+                }
+            }
+        }
+    }
+
+    private void replaceTableCellValue(XWPFTableCell tableCell, Map<String, Object> params) {
+        Iterator<Map.Entry<String, Object>> iterator = params.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Object> entry = iterator.next();
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (tableCell.getText().contains(key)) {
+                String cellText = tableCell.getText();
+                tableCell.setText(cellText.replace(key, (String) value));
+                break;
+            }
+        }
+    }
+
+    private void readTables(List<XWPFTable> tables) {
+        for (int i = 0; i < tables.size(); i++) {
+            XWPFTable table = tables.get(i);
+            List<XWPFTableRow> rows = table.getRows();
+            for (int j = 0; j < rows.size(); j++) {
+                XWPFTableRow tableRow = rows.get(j);
+                List<XWPFTableCell> tableCells = tableRow.getTableCells();
+                for (int k = 0; k < tableCells.size(); k++) {
+                    XWPFTableCell tableCell = tableCells.get(k);
+                    System.out.println("tableCell.getText(table" + (i + 1) + "[" + (j + 1) + "," + (k + 1) + "]) = " + tableCell.getText());
+                }
+            }
+        }
+    }
+
     private void readGraphs(List<XWPFParagraph> paragraphs) {
-        for (int i = 0; i < paragraphs.size(); i++) {
-            XWPFParagraph paragraph = paragraphs.get(i);
+        for (XWPFParagraph paragraph : paragraphs) {
             List<XWPFRun> runs = paragraph.getRuns();
-            for (int j = 0; j < runs.size(); j++) {
-                XWPFRun run = runs.get(j);
+            if (runs.isEmpty()) {
+                continue;
+            }
+            for (XWPFRun run : runs) {
                 System.out.println("run.getColor() = " + run.getColor());
                 System.out.println("run.getText(0) = " + run.getText(0));
                 System.out.println("run.getCharacterSpacing() = " + run.getCharacterSpacing());
@@ -55,7 +117,6 @@ public class DocxHandler implements IDocHandler<Object> {
                 System.out.println("run.getFontName() = " + run.getFontName());
                 System.out.println("run.getFontSize() = " + run.getFontSize());
             }
-            System.out.println("runs = " + i + "==========================");
         }
     }
 
@@ -66,9 +127,19 @@ public class DocxHandler implements IDocHandler<Object> {
     }
 
     @Override
-    public void close() {
+    public void writeAutoClose(String toPath) throws IOException {
+        document.write(new FileOutputStream(toPath));
         try {
             document.close();
-        } catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            document.close();
+        } catch (Exception ignored) {
+        }
     }
 }
