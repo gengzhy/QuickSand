@@ -34,6 +34,7 @@
         <commons-io.version>2.11.0</commons-io.version>
         <baidu-ai-sdk.version>4.16.10</baidu-ai-sdk.version>
         <gson.version>2.9.0</gson.version>
+        <tencent-api-sdk-java.version>4.0.11</tencent-api-sdk-java.version>
     </properties>
     <dependencies>
         <dependency>
@@ -215,6 +216,13 @@
             <groupId>com.baidu.aip</groupId>
             <artifactId>java-sdk</artifactId>
             <version>${baidu-ai-sdk.version}</version>
+        </dependency>
+
+        <!--腾讯OCR API-->
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java</artifactId>
+            <version>${tencent-api-sdk-java.version}</version>
         </dependency>
 
         <!-- end thymeleaf模板引擎 --><!--<dependency>
