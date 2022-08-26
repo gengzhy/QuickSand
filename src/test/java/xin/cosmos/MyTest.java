@@ -5,6 +5,7 @@ import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.cvm.v20170312.CvmClient;
 import com.tencentcloudapi.cvm.v20170312.models.DescribeInstancesRequest;
 import com.tencentcloudapi.cvm.v20170312.models.DescribeInstancesResponse;
+import org.apache.xmlbeans.impl.common.XmlStreamUtils;
 
 public class MyTest {
     final static String APP_ID = "1307506702";
