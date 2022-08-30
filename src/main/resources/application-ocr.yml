@@ -7,3 +7,10 @@ ocr:
     appKey: API_KEY
     #百度智能云注册的应用程序SECRET_KEY
     secretKey: SECRET_KEY
+  tencent:
+    #腾讯云注册的应用程序APP_ID
+    appId: APP_ID
+    #腾讯云注册的应用程序API_KEY
+    secretId: AKIDlBPN7csxpqgJgroWyAxYv3wc3E9pFPJP
+    #腾讯云注册的应用程序SECRET_KEY
+    secretKey: wd4JRPAkJhrmUyNbbNxJYcU7cv2weDYf
