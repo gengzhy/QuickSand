@@ -2,7 +2,6 @@ package xin.cosmos;
 
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.ocr.v20181119.models.VatInvoiceVerifyRequest;
-import com.tencentcloudapi.ocr.v20181119.models.VatInvoiceVerifyResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +14,7 @@ public class TencentOcrTest {
 
     @Test
     public void vatInvoice() {
-        String imageUrl = "e:/my/images/vat_invoice.png";
+        String imageUrl = "e:/my/images/vat_invoice.pdf";
         tencentOcr.vatInvoiceOcr(imageUrl);
     }
 
